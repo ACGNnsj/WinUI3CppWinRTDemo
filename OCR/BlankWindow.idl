@@ -1,0 +1,12 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace OCR
+{
+    [default_interface]
+    runtimeclass BlankWindow : Microsoft.UI.Xaml.Window
+    {
+        BlankWindow();
+        Int32 MyProperty;
+    }
+}
