@@ -86,5 +86,24 @@ namespace winrt::OCR::implementation
 			messageWindow.Content(textBlock);
 			messageWindow.Activate();
 		}
+		auto anotherWindow = Window();
+		HWND anotherHWnd = WindowHelper::GetWindowHandle(anotherWindow);
+		LONG_PTR anotherLExStyle = GetWindowLongPtr(anotherHWnd, GWL_EXSTYLE);
+		anotherLExStyle |= WS_EX_LAYERED;
+		SetWindowLongPtr(anotherHWnd, GWL_EXSTYLE, anotherLExStyle);
+		BYTE anotherBAlpha = (255 * 50) / 100;
+		bool anotherResult = false;
+		if (anotherLExStyle & WS_EX_LAYERED) {
+			anotherResult = SetLayeredWindowAttributes(anotherHWnd, RGB(0, 0, 0), anotherBAlpha, LWA_COLORKEY);
+		}
+		if (!anotherResult)
+		{
+			auto messageWindow = Window();
+			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
+			textBlock.Text(L"Another Failed");
+			messageWindow.Content(textBlock);
+			messageWindow.Activate();
+		}
+		anotherWindow.Activate();
 	}
 }
