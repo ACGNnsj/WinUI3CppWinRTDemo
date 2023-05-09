@@ -7,7 +7,8 @@
 #include "MainWindow.g.cpp"
 #endif
 #include <winrt/Microsoft.UI.Windowing.h>
-
+#include <dwmapi.h>
+#include <WindowHelper.h>
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -39,41 +40,51 @@ namespace winrt::OCR::implementation
 		auto newWindow = Window();
 		OCROverlay overlay = OCROverlay();
 		//OCROverlay overlay();
-		//newWindow.ExtendsContentIntoTitleBar(true);
+		newWindow.ExtendsContentIntoTitleBar(true);
 		//overlay.Background(Media::SolidColorBrush(Windows::UI::Colors::Transparent()));
 		newWindow.Content(overlay);
 		auto appWindow = newWindow.AppWindow();
-		winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
-		appWindow.Resize(size);
+		/*winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
+		appWindow.Resize(size);*/
 		auto presenter = appWindow.Presenter().try_as<winrt::Microsoft::UI::Windowing::OverlappedPresenter>();
-		//presenter.SetBorderAndTitleBar(false, false);
+		presenter.SetBorderAndTitleBar(false, false);
 		auto brushHolder = newWindow.try_as<winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop>();
 		auto compositor = Compositor();
 		auto colorBrush = compositor.CreateColorBrush(Windows::UI::ColorHelper::FromArgb(0, 0, 0, 0)).try_as<winrt::Windows::UI::Composition::CompositionBrush>();
 		brushHolder.SystemBackdrop(colorBrush);
-		auto windowNative{ newWindow.try_as<::IWindowNative>() };
-		winrt::check_bool(windowNative);
-		HWND hWnd{ 0 };
-		windowNative->get_WindowHandle(&hWnd);
-		SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		HWND hWnd = WindowHelper::GetWindowHandle(newWindow);
+		int x, y, width, height = (x = 0, y = 0, width = 100, height = 100);
+		SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height, 0);
+		RECT systemMargin = WindowHelper::GetSystemMargin(hWnd);
+		x -= systemMargin.left;
+		y -= systemMargin.top;
+		width += systemMargin.left + systemMargin.right;
+		height += systemMargin.top + systemMargin.bottom;
+		SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height, 0);
+		WindowHelper::DisableRoundedCorner(hWnd);
 		LONG_PTR lExStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-		lExStyle ^= WS_EX_LAYERED;
+		lExStyle |= WS_EX_LAYERED;
 		SetWindowLongPtr(hWnd, GWL_EXSTYLE, lExStyle);
-		BYTE bAlpha = (lExStyle & WS_EX_LAYERED) ? (255 * 50) / 100 : 255;
-		bool result = SetLayeredWindowAttributes(hWnd, RGB(255, 0, 0), bAlpha, LWA_COLORKEY);
-		newWindow.Activate();
-		auto messageWindow = Window();
-		auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
-		if (result)
-		{
-			textBlock.Text(L"Success");
-			messageWindow.Content(textBlock);
+		BYTE bAlpha = (255 * 50) / 100;
+		bool result = true;
+		if (lExStyle & WS_EX_LAYERED) {
+			result = SetLayeredWindowAttributes(hWnd, RGB(255, 0, 0), bAlpha, LWA_COLORKEY);
 		}
-		else
+		else {
+			auto errorWindow = Window();
+			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
+			textBlock.Text(L"No WS_EX_LAYERED");
+			errorWindow.Content(textBlock);
+			errorWindow.Activate();
+		}
+		newWindow.Activate();
+		if (!result)
 		{
+			auto messageWindow = Window();
+			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
 			textBlock.Text(L"Failed");
 			messageWindow.Content(textBlock);
+			messageWindow.Activate();
 		}
-		messageWindow.Activate();
 	}
 }
