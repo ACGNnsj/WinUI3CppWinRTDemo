@@ -10,7 +10,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
 >
-    <SwapChainPanel x:Name="swapChainPanel1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
         <Border x:Name="mainBorder" BorderThickness="10" BorderBrush="Red" >
             <!-- <SwapChainPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">-->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -18,5 +17,4 @@
             </StackPanel>
             <!-- </SwapChainPanel> -->
         </Border>
-    </SwapChainPanel>
 </Page>

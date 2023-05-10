@@ -9,6 +9,7 @@
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <dwmapi.h>
 #include <WindowHelper.h>
+#include <winrt/Microsoft.UI.Interop.h> // For the WindowId struct and the GetWindowIdFromWindow function.
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -39,14 +40,10 @@ namespace winrt::OCR::implementation
 		newAppWindow.Show(true);*/
 		auto newWindow = Window();
 		OCROverlay overlay = OCROverlay();
-		//OCROverlay overlay();
 		newWindow.ExtendsContentIntoTitleBar(true);
-		//overlay.Background(Media::SolidColorBrush(Windows::UI::Colors::Transparent()));
 		newWindow.Content(overlay);
 		auto appWindow = newWindow.AppWindow();
-		/*winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
-		appWindow.Resize(size);*/
-		auto presenter = appWindow.Presenter().try_as<winrt::Microsoft::UI::Windowing::OverlappedPresenter>();
+		auto presenter = appWindow.Presenter().try_as<Microsoft::UI::Windowing::OverlappedPresenter>();
 		presenter.SetBorderAndTitleBar(false, false);
 		auto brushHolder = newWindow.try_as<winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop>();
 		auto compositor = Compositor();
@@ -54,16 +51,10 @@ namespace winrt::OCR::implementation
 		brushHolder.SystemBackdrop(colorBrush);
 		HWND hWnd = WindowHelper::GetWindowHandle(newWindow);
 		int x, y, width, height = (x = 0, y = 0, width = 100, height = 100);
-		SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height, 0);
-		RECT systemMargin = WindowHelper::GetSystemMargin(hWnd);
-		x -= systemMargin.left;
-		y -= systemMargin.top;
-		width += systemMargin.left + systemMargin.right;
-		height += systemMargin.top + systemMargin.bottom;
-		SetWindowPos(hWnd, HWND_TOPMOST, x, y, width, height, 0);
+		WindowHelper::SetActualWindowPos(hWnd, HWND_TOPMOST, 0, 0, 100, 100, 0);
 		WindowHelper::DisableRoundedCorner(hWnd);
 		LONG_PTR lExStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-		lExStyle |= WS_EX_LAYERED;
+		lExStyle |= WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP;
 		SetWindowLongPtr(hWnd, GWL_EXSTYLE, lExStyle);
 		BYTE bAlpha = (255 * 50) / 100;
 		bool result = true;
@@ -71,39 +62,42 @@ namespace winrt::OCR::implementation
 			result = SetLayeredWindowAttributes(hWnd, RGB(255, 0, 0), bAlpha, LWA_COLORKEY);
 		}
 		else {
-			auto errorWindow = Window();
-			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
-			textBlock.Text(L"No WS_EX_LAYERED");
-			errorWindow.Content(textBlock);
-			errorWindow.Activate();
+			WindowHelper::OpenMessageWindow(L"No WS_EX_LAYERED");
 		}
 		newWindow.Activate();
-		if (!result)
-		{
-			auto messageWindow = Window();
-			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
-			textBlock.Text(L"Failed");
-			messageWindow.Content(textBlock);
-			messageWindow.Activate();
-		}
-		auto anotherWindow = Window();
-		HWND anotherHWnd = WindowHelper::GetWindowHandle(anotherWindow);
+		if (!result)WindowHelper::OpenMessageWindow(L"Failed");
+		HWND anotherHWnd;
+		this->try_as<IWindowNative>()->get_WindowHandle(&anotherHWnd);
 		LONG_PTR anotherLExStyle = GetWindowLongPtr(anotherHWnd, GWL_EXSTYLE);
-		anotherLExStyle |= WS_EX_LAYERED;
+		anotherLExStyle |= WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP;
 		SetWindowLongPtr(anotherHWnd, GWL_EXSTYLE, anotherLExStyle);
 		BYTE anotherBAlpha = (255 * 50) / 100;
 		bool anotherResult = false;
 		if (anotherLExStyle & WS_EX_LAYERED) {
 			anotherResult = SetLayeredWindowAttributes(anotherHWnd, RGB(0, 0, 0), anotherBAlpha, LWA_COLORKEY);
 		}
-		if (!anotherResult)
-		{
-			auto messageWindow = Window();
-			auto textBlock = winrt::Microsoft::UI::Xaml::Controls::TextBlock();
-			textBlock.Text(L"Another Failed");
-			messageWindow.Content(textBlock);
-			messageWindow.Activate();
-		}
-		anotherWindow.Activate();
+		if (!anotherResult) WindowHelper::OpenMessageWindow(L"Another Failed");
+		//anotherWindow.Activate();
+		int horizontal, vertical;
+		WindowHelper::GetDesktopResolution(horizontal, vertical);
+		/*HINSTANCE hUser = GetModuleHandle(L"user32.dll");
+		auto parentNative{ this->try_as<::IWindowNative>() };
+		winrt::check_bool(parentNative);
+		HWND parent{ 0 };
+		parentNative->get_WindowHandle(&parent);*/
+		HWND const child = CreateWindowEx(WS_EX_NOREDIRECTIONBITMAP| WS_EX_TOPMOST| WS_EX_TRANSPARENT | WS_EX_LAYERED,
+			L"EDIT", L"Sample",
+			WS_OVERLAPPED| WS_DLGFRAME | WS_SYSMENU | WS_THICKFRAME | WS_VISIBLE,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			nullptr, nullptr, nullptr, nullptr);
+		SetLayeredWindowAttributes(child, 0, (BYTE)255, LWA_ALPHA);
+		//WindowHelper::OpenMessageWindow(L"childHWND: " + to_hstring((int)child)+to_hstring(child == nullptr));
+		WindowHelper::SetActualWindowPos(child, HWND_TOPMOST, 0, 0, horizontal, vertical, 0);
+		WindowHelper::DisableRoundedCorner(child);
+		Microsoft::UI::WindowId windowId = Microsoft::UI::GetWindowIdFromWindow(child);
+		auto childAppWindow=Microsoft::UI::Windowing::AppWindow::GetFromWindowId(windowId);
+		childAppWindow.Presenter().try_as<Microsoft::UI::Windowing::OverlappedPresenter>().SetBorderAndTitleBar(true,false);
+		
 	}
 }
