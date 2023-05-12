@@ -16,32 +16,34 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::OCR::implementation
 {
-	OCROverlay::OCROverlay()
-	{
-		InitializeComponent();
-	}
+    OCROverlay::OCROverlay()
+    {
+        InitializeComponent();
+    }
 
-	int32_t OCROverlay::MyProperty()
-	{
-		throw hresult_not_implemented();
-	}
+    int32_t OCROverlay::MyProperty()
+    {
+        throw hresult_not_implemented();
+    }
 
-	void OCROverlay::MyProperty(int32_t /* value */)
-	{
-		throw hresult_not_implemented();
-	}
+    void OCROverlay::MyProperty(int32_t /* value */)
+    {
+        throw hresult_not_implemented();
+    }
 
-	void OCROverlay::myButton_Click(IInspectable const&, RoutedEventArgs const&)
-	{
-		myButton().Content(box_value(L"Clicked"));
-		auto newWindow = Window();
-		MicaPage micaPage = MicaPage(newWindow);
-		newWindow.ExtendsContentIntoTitleBar(true);
-		newWindow.Content(micaPage);
-		//micaPage.AfterInit(newWindow);
-		auto appWindow = newWindow.AppWindow();
-		winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
-		appWindow.Resize(size);
-		newWindow.Activate();
-	}
+    void OCROverlay::myButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        myButton().Content(box_value(L"Clicked"));
+        /*auto newWindow = Window();
+        MicaPage micaPage = MicaPage(newWindow);
+        newWindow.ExtendsContentIntoTitleBar(true);
+        newWindow.Content(micaPage);
+        //micaPage.AfterInit(newWindow);
+        auto appWindow = newWindow.AppWindow();
+        winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
+        appWindow.Resize(size);
+        newWindow.Activate();*/
+        auto newWindow = OverlayWindow();
+        newWindow.Activate();
+    }
 }

@@ -1,0 +1,12 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace OCR
+{
+    [default_interface]
+    runtimeclass OverlayWindow : Microsoft.UI.Xaml.Window
+    {
+        OverlayWindow();
+        Int32 MyProperty;
+    }
+}
