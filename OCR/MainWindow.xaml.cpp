@@ -6,10 +6,11 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-#include <winrt/Microsoft.UI.Windowing.h>
 #include <dwmapi.h>
 #include <WindowHelper.h>
 #include <winrt/Microsoft.UI.Interop.h> // For the WindowId struct and the GetWindowIdFromWindow function.
+
+#include "StringHelper.h"
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -47,17 +48,17 @@ namespace winrt::OCR::implementation
         auto appWindow = newWindow.AppWindow();
         auto presenter = appWindow.Presenter().try_as<Microsoft::UI::Windowing::OverlappedPresenter>();
         presenter.SetBorderAndTitleBar(false, false);
-        auto brushHolder = newWindow.try_as<winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop>();
+        /*auto brushHolder = newWindow.try_as<winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop>();
         auto compositor = Compositor();
         auto colorBrush = compositor.CreateColorBrush(Windows::UI::ColorHelper::FromArgb(0, 0, 0, 0)).try_as<
             winrt::Windows::UI::Composition::CompositionBrush>();
-        brushHolder.SystemBackdrop(colorBrush);
+        brushHolder.SystemBackdrop(colorBrush);*/
         HWND hWnd = WindowHelper::GetWindowHandle(newWindow);
-        int x, y, width, height = (x = 0, y = 0, width = 100, height = 100);
-        WindowHelper::SetActualWindowPos(hWnd, HWND_TOPMOST, 0, 0, 100, 100, 0);
+        // int x, y, width, height = (x = 0, y = 0, width = 100, height = 100);
+        WindowHelper::SetActualWindowPos(hWnd, HWND_TOPMOST, 100, 100, 100, 100, 0);
         WindowHelper::DisableRoundedCorner(hWnd);
         LONG_PTR lExStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
-        lExStyle |= WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP;
+        lExStyle |= WS_EX_LAYERED;
         SetWindowLongPtr(hWnd, GWL_EXSTYLE, lExStyle);
         BYTE bAlpha = (255 * 50) / 100;
         bool result = true;
@@ -70,6 +71,11 @@ namespace winrt::OCR::implementation
             WindowHelper::OpenMessageWindow(L"No WS_EX_LAYERED");
         }
         newWindow.Activate();
+        LONG_PTR nStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
+        hstring hexNStyleString = StringHelper::to_hex_hstring(nStyle);
+        WindowHelper::OpenMessageWindow(
+            L"old overlay " + hexNStyleString + L" " + StringHelper::to_hex_hstring(
+                GetWindowLongPtr(hWnd, GWL_EXSTYLE)));
         /*HWND contentWindowSiteBridge = FindWindowEx(hWnd, NULL, L"Microsoft.UI.Content.DesktopSiteBridge", NULL);
         WindowHelper::OpenMessageWindow(to_hstring((int)contentWindowSiteBridge));*/
         /*BOOL closeResult = PostMessage(contentWindowSiteBridge, WM_CLOSE, 0, 0);

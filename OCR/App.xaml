@@ -17,6 +17,7 @@
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
             <SolidColorBrush x:Key="WindowCaptionForeground">Transparent</SolidColorBrush>
             <SolidColorBrush x:Key="WindowCaptionForegroundDisabled">Transparent</SolidColorBrush>
+            <local:DoubleToThicknessConverter x:Key="DoubleToThicknessConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

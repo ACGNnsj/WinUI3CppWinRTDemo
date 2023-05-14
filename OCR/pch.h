@@ -40,3 +40,8 @@ namespace util
     using namespace robmikh::common::uwp;
 }
 #include <microsoft.ui.xaml.window.h>
+#include <winrt/Microsoft.UI.Windowing.h>
+#include <microsoft.ui.xaml.media.dxinterop.h>
+#include <winrt/Windows.UI.Xaml.Interop.h>
+#include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Input.h>

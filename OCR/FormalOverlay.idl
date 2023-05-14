@@ -1,0 +1,13 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace OCR
+{
+    [default_interface]
+    runtimeclass FormalOverlay : Microsoft.UI.Xaml.Window
+    {
+        FormalOverlay();
+        Int32 MyProperty;
+        Double BorderThickness;
+    }
+}

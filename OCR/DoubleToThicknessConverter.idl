@@ -1,0 +1,7 @@
+namespace OCR
+{
+    runtimeclass DoubleToThicknessConverter : [default] Microsoft.UI.Xaml.Data.IValueConverter
+    {
+		DoubleToThicknessConverter();
+	}
+}

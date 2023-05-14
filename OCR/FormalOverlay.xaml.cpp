@@ -2,30 +2,36 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "OverlayWindow.xaml.h"
-
-#if __has_include("OverlayWindow.g.cpp")
-#include "OverlayWindow.g.cpp"
+#include "FormalOverlay.xaml.h"
+#if __has_include("FormalOverlay.g.cpp")
+#include "FormalOverlay.g.cpp"
 #endif
 #include <dwmapi.h>
 #include <GdiPlus.h>
+#include <WindowHelper.h>
 #pragma comment(lib, "gdiplus.lib")
-// #include <gdiplusinit.h>
-// #include <gdiplusflat.h>
-// using namespace Gdiplus;
+// using namespace winrt;
+// using namespace Microsoft::UI::Xaml;
+
+// To learn more about WinUI, the WinUI project structure,
+// and more about our project templates, see: http://aka.ms/winui-project-info.
+
 namespace winrt::OCR::implementation
 {
-    OverlayWindow::OverlayWindow()
+    using namespace Microsoft::UI::Xaml;
+    FormalOverlay::FormalOverlay()
     {
         InitializeComponent();
+        this->ExtendsContentIntoTitleBar(true);
         this->try_as<IWindowNative>()->get_WindowHandle(&hWndMain);
         _apw = this->AppWindow();
         _presenter = _apw.Presenter().try_as<Microsoft::UI::Windowing::OverlappedPresenter>();
-        _presenter.IsResizable(false);
         _presenter.SetBorderAndTitleBar(false, false);
+        _presenter.IsResizable(false);
         //_apw.TitleBar().ExtendsContentIntoTitleBar();
         auto pvAttribute = DWMWCP_DEFAULT;
-        DwmSetWindowAttribute(hWndMain, DWMWA_WINDOW_CORNER_PREFERENCE, &pvAttribute, sizeof(DWMWINDOWATTRIBUTE));
+        //DwmSetWindowAttribute(hWndMain, DWMWA_WINDOW_CORNER_PREFERENCE, &pvAttribute, sizeof(DWMWINDOWATTRIBUTE));
+        WindowHelper::DisableRoundedCorner(hWndMain);
         auto closedRevoker = this->Closed(auto_revoke, [&](auto&&, auto&&)
         {
             m_pD2DDeviceContext = nullptr;
@@ -58,9 +64,9 @@ namespace winrt::OCR::implementation
                 panelNative->SetSwapChain(m_pDXGISwapChain1.get());
             }
         }
-        //LONG_PTR nStyle = GetWindowLongPtr(hWndMain, GWL_STYLE);
+        LONG_PTR nStyle = GetWindowLongPtr(hWndMain, GWL_STYLE);
         //SetWindowLongPtr(hWndMain, GWL_STYLE, nStyle & ~WS_CAPTION);
-        //SetWindowLongPtr(hWndMain, GWL_STYLE, nStyle | WS_SIZEBOX);
+        SetWindowLongPtr(hWndMain, GWL_STYLE, nStyle | WS_SIZEBOX);
         LONG_PTR nExStyle = GetWindowLongPtr(hWndMain, GWL_EXSTYLE);
         if ((nExStyle & WS_EX_LAYERED) == 0)
         {
@@ -82,35 +88,23 @@ namespace winrt::OCR::implementation
             }
             SetLayeredWindowAttributes(hWndMain, nColorBackground, 255, LWA_COLORKEY);
         }
+        WindowHelper::SetActualWindowPos(hWndMain, HWND_TOPMOST, 100, 100, 800, 600, 0);
         auto root = this->Content();
-        auto pointerMovedToken = root.PointerMoved({this, &OverlayWindow::Root_PointerMoved});
-        auto pointerPressedToken = root.PointerPressed({this, &OverlayWindow::Root_PointerPressed});
-        auto pointerReleasedToken = root.PointerReleased({this, &OverlayWindow::Root_PointerReleased});
+        // auto root = sp1();
+        auto pointerMovedToken = root.PointerMoved({this, &FormalOverlay::Root_PointerMoved});
+        auto pointerPressedToken = root.PointerPressed({this, &FormalOverlay::Root_PointerPressed});
+        auto pointerReleasedToken = root.PointerReleased({this, &FormalOverlay::Root_PointerReleased});
+        // WindowHelper::OpenMessageWindow(get_class_name(root));
     }
 
-    int32_t OverlayWindow::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void OverlayWindow::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
-
-    void OverlayWindow::myButton_Click(IInspectable const&, Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        myButton().Content(box_value(L"Clicked"));
-    }
-
-    HRESULT OverlayWindow::CreateD2D1Factory()
+    HRESULT FormalOverlay::CreateD2D1Factory()
     {
         D2D1_FACTORY_OPTIONS options = {D2D1_DEBUG_LEVEL_INFORMATION};
         HRESULT result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, options, m_pD2DFactory1.put());
         return result;
     }
 
-    HRESULT OverlayWindow::CreateDeviceContext()
+    HRESULT FormalOverlay::CreateDeviceContext()
     {
         D3D_FEATURE_LEVEL featureLevel;
         D3D_FEATURE_LEVEL aD3D_FEATURE_LEVEL[] = {
@@ -140,7 +134,7 @@ namespace winrt::OCR::implementation
         return result;
     }
 
-    HRESULT OverlayWindow::CreateSwapChain(HWND hWnd)
+    HRESULT FormalOverlay::CreateSwapChain(HWND hWnd)
     {
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc{
             1, 1, DXGI_FORMAT_B8G8R8A8_UNORM, false, {1, 0},DXGI_USAGE_RENDER_TARGET_OUTPUT, 2,
@@ -175,11 +169,11 @@ namespace winrt::OCR::implementation
         return result;
     }
 
-    void OverlayWindow::Root_PointerMoved(Windows::Foundation::IInspectable const& sender,
-                                          Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    void FormalOverlay::Root_PointerMoved(Windows::Foundation::IInspectable const& sender,
+                                          Input::PointerRoutedEventArgs const& e)
     {
-        winrt::Microsoft::UI::Input::PointerPoint pp = e.GetCurrentPoint(
-            sender.try_as<Microsoft::UI::Xaml::UIElement>());
+        Microsoft::UI::Input::PointerPoint pp = e.GetCurrentPoint(
+            sender.try_as<UIElement>());
         auto properties = pp.Properties();
         if (properties.IsLeftButtonPressed())
         {
@@ -193,10 +187,11 @@ namespace winrt::OCR::implementation
         }
     }
 
-    void OverlayWindow::Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
-                                            Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    void FormalOverlay::Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
+                                            Input::PointerRoutedEventArgs const& e)
     {
-        Microsoft::UI::Xaml::UIElement sd = sender.try_as<Microsoft::UI::Xaml::UIElement>();
+        // WindowHelper::OpenMessageWindow(L"pressed");
+        UIElement sd = sender.try_as<UIElement>();
         auto properties = e.GetCurrentPoint(sd).Properties();
         if (properties.IsLeftButtonPressed())
         {
@@ -209,7 +204,7 @@ namespace winrt::OCR::implementation
             nY = pt.y;
             HWND hWnd = WindowFromPoint(pt);
             Microsoft::UI::Input::PointerPoint pp = e.GetCurrentPoint(sd);
-            auto elementStack = Microsoft::UI::Xaml::Media::VisualTreeHelper::FindElementsInHostCoordinates(
+            auto elementStack = Media::VisualTreeHelper::FindElementsInHostCoordinates(
                 pp.Position(), sd);
             int nCpt = 0;
             bool bOK = true;
@@ -217,7 +212,7 @@ namespace winrt::OCR::implementation
             {
                 if (nCpt == 0)
                 {
-                    if (xaml_typename<Microsoft::UI::Xaml::Controls::Border>().Name != get_class_name(element))
+                    if (xaml_typename<Controls::Border>().Name != get_class_name(element))
                     {
                         bOK = false;
                         break;
@@ -225,7 +220,7 @@ namespace winrt::OCR::implementation
                 }
                 if (nCpt == 1)
                 {
-                    if (xaml_typename<Microsoft::UI::Xaml::Controls::SwapChainPanel>().Name != get_class_name(
+                    if (xaml_typename<Controls::SwapChainPanel>().Name != get_class_name(
                         element))
                     {
                         bOK = false;
@@ -243,31 +238,76 @@ namespace winrt::OCR::implementation
         else if (properties.IsRightButtonPressed())
         {
             Sleep(200);
-            Microsoft::UI::Xaml::Application::Current().Exit();
+            Application::Current().Exit();
         }
     }
 
-    void OverlayWindow::Root_PointerReleased(Windows::Foundation::IInspectable const& sender,
-                                             Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const&)
+    void FormalOverlay::Root_PointerReleased(Windows::Foundation::IInspectable const& sender,
+                                             Input::PointerRoutedEventArgs const&)
 
     {
-        sender.try_as<Microsoft::UI::Xaml::UIElement>().ReleasePointerCaptures();
+        sender.try_as<UIElement>().ReleasePointerCaptures();
         bMoving = false;
     }
 
-    void OverlayWindow::tsClickThrough_Toggled(Windows::Foundation::IInspectable const& sender,
-                                               Microsoft::UI::Xaml::RoutedEventArgs const&)
+    void FormalOverlay::tsClickThrough_Toggled(Windows::Foundation::IInspectable const& sender,
+                                               RoutedEventArgs const&)
     {
-        Microsoft::UI::Xaml::UIElement ts = sender.try_as<Microsoft::UI::Xaml::UIElement>();
-        if (ts.try_as<Microsoft::UI::Xaml::Controls::ToggleSwitch>().IsOn())
+        UIElement ts = sender.try_as<UIElement>();
+        if (ts.try_as<Controls::ToggleSwitch>().IsOn())
         {
-            tb2().Visibility(Microsoft::UI::Xaml::Visibility::Visible);
-            tb3().Visibility(Microsoft::UI::Xaml::Visibility::Visible);
+            tb2().Visibility(Visibility::Visible);
+            tb3().Visibility(Visibility::Visible);
         }
         else
         {
-            tb2().Visibility(Microsoft::UI::Xaml::Visibility::Collapsed);
-            tb3().Visibility(Microsoft::UI::Xaml::Visibility::Collapsed);
+            tb2().Visibility(Visibility::Collapsed);
+            tb3().Visibility(Visibility::Collapsed);
         }
+    }
+
+    void FormalOverlay::border_MoveOver(Windows::Foundation::IInspectable const& sender,
+                                        RoutedEventArgs const& e)
+    {
+        // this->ProtectedCursor(Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::SizeAll));
+    }
+
+    void FormalOverlay::panel_Loaded(Windows::Foundation::IInspectable const&,
+                                     RoutedEventArgs const&)
+    {
+        // sp1().ProtectedCursor(
+        //     Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::Arrow));
+    }
+
+    void FormalOverlay::border_Loaded(Windows::Foundation::IInspectable const&,
+                                      RoutedEventArgs const&)
+    {
+        mainBorder().ProtectedCursor(
+            Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::SizeAll));
+    }
+
+    int32_t FormalOverlay::MyProperty()
+    {
+        throw hresult_not_implemented();
+    }
+
+    void FormalOverlay::MyProperty(int32_t /* value */)
+    {
+        throw hresult_not_implemented();
+    }
+
+    double FormalOverlay::BorderThickness()
+    {
+        return borderThickness;
+    }
+
+    void FormalOverlay::BorderThickness(double value)
+    {
+        borderThickness = value;
+    }
+
+    void FormalOverlay::myButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        myButton().Content(box_value(L"Clicked"));
     }
 }
