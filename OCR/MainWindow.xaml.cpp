@@ -6,11 +6,8 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-#include <dwmapi.h>
-#include <WindowHelper.h>
-#include <winrt/Microsoft.UI.Interop.h> // For the WindowId struct and the GetWindowIdFromWindow function.
+// #include <winrt/Microsoft.UI.Interop.h> // For the WindowId struct and the GetWindowIdFromWindow function.
 
-#include "StringHelper.h"
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 

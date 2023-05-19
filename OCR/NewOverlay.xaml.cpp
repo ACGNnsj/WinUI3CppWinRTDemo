@@ -6,9 +6,7 @@
 #if __has_include("NewOverlay.g.cpp")
 #include "NewOverlay.g.cpp"
 #endif
-#include <dwmapi.h>
-#include <GdiPlus.h>
-#pragma comment(lib, "gdiplus.lib")
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -26,7 +24,7 @@ namespace winrt::OCR::implementation
         _presenter.IsResizable(false);
         _presenter.SetBorderAndTitleBar(false, false);
         //_apw.TitleBar().ExtendsContentIntoTitleBar();
-        auto pvAttribute = DWMWCP_DEFAULT;
+        const auto pvAttribute = DWMWCP_DEFAULT;
         DwmSetWindowAttribute(hWndMain, DWMWA_WINDOW_CORNER_PREFERENCE, &pvAttribute, sizeof(DWMWINDOWATTRIBUTE));
         auto closedRevoker = this->Closed(auto_revoke, [&](auto&&, auto&&)
         {
@@ -39,12 +37,11 @@ namespace winrt::OCR::implementation
             //m_pD2DFactory = nullptr;
             Gdiplus::GdiplusShutdown(m_initToken);
         });
-        Gdiplus::GdiplusStartupInput input = {};
+        const Gdiplus::GdiplusStartupInput input = {};
         GdiplusStartup(&m_initToken, &input, nullptr);
         Gdiplus::GpBitmap* pImage = nullptr;
-        Gdiplus::GpStatus status = Gdiplus::DllExports::GdipCreateBitmapFromFile(
-            L"Assets\\SplashScreen.scale-200.png", &pImage);
-        if (status == 0)
+        if (const Gdiplus::GpStatus status = Gdiplus::DllExports::GdipCreateBitmapFromFile(
+            L"Assets\\SplashScreen.scale-200.png", &pImage); status == 0)
         {
             Gdiplus::DllExports::GdipCreateHBITMAPFromBitmap(pImage, &m_hBitmap, RGB(0, 0, 0));
             Gdiplus::DllExports::GdipDisposeImage(pImage);
@@ -56,20 +53,19 @@ namespace winrt::OCR::implementation
             result = CreateSwapChain(nullptr);
             if (result == S_OK)
             {
-                com_ptr<ISwapChainPanelNative> panelNative = swapChainPanel1().try_as<ISwapChainPanelNative>();
+                const com_ptr<ISwapChainPanelNative> panelNative = swapChainPanel1().try_as<ISwapChainPanelNative>();
                 panelNative->SetSwapChain(m_pDXGISwapChain1.get());
             }
         }
         //LONG_PTR nStyle = GetWindowLongPtr(hWndMain, GWL_STYLE);
         //SetWindowLongPtr(hWndMain, GWL_STYLE, nStyle & ~WS_CAPTION);
         //SetWindowLongPtr(hWndMain, GWL_STYLE, nStyle | WS_SIZEBOX);
-        LONG_PTR nExStyle = GetWindowLongPtr(hWndMain, GWL_EXSTYLE);
-        if ((nExStyle & WS_EX_LAYERED) == 0)
+        if (const LONG_PTR nExStyle = GetWindowLongPtr(hWndMain, GWL_EXSTYLE); (nExStyle & WS_EX_LAYERED) == 0)
         {
             SetWindowLongPtr(hWndMain, GWL_EXSTYLE, nExStyle | WS_EX_LAYERED);
             DWORD nAppsUseLightTheme = 0;
             DWORD nSystemUsesLightTheme = 0;
-            auto sPathKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+            const auto sPathKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
             HKEY rk;
             RegOpenKeyEx(HKEY_CURRENT_USER, sPathKey, 0, KEY_READ | KEY_WOW64_64KEY, &rk);
             DWORD dwBufferSize(sizeof(DWORD));
@@ -84,7 +80,7 @@ namespace winrt::OCR::implementation
             }
             SetLayeredWindowAttributes(hWndMain, nColorBackground, 255, LWA_COLORKEY);
         }
-        auto root = this->Content();
+        const auto root = this->Content();
         auto pointerMovedToken = root.PointerMoved({this, &NewOverlay::Root_PointerMoved});
         auto pointerPressedToken = root.PointerPressed({this, &NewOverlay::Root_PointerPressed});
         auto pointerReleasedToken = root.PointerReleased({this, &NewOverlay::Root_PointerReleased});
@@ -119,7 +115,7 @@ namespace winrt::OCR::implementation
             D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0,
             D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1
         };
-        HRESULT result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE,NULL,
+        HRESULT result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
                                            D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG,
                                            aD3D_FEATURE_LEVEL,
                                            ARRAYSIZE(aD3D_FEATURE_LEVEL),D3D11_SDK_VERSION, m_pD3D11DevicePtr.put(),
@@ -214,7 +210,7 @@ namespace winrt::OCR::implementation
             }
             if (bMoving)
             {
-                bool result = sd.CapturePointer(e.Pointer());
+                [[maybe_unused]] bool result = sd.CapturePointer(e.Pointer());
                 nXWindow = _apw.Position().X;
                 nYWindow = _apw.Position().Y;
                 POINT pt;
@@ -223,10 +219,10 @@ namespace winrt::OCR::implementation
                 nY = pt.y;
             }
             // HWND hWnd = WindowFromPoint(pt);
-            
+
             // int nCpt = 0;
             // bool bOK = true;
-            
+
             // if (bOK && tsClickThrough().IsOn())
             // {
             //     SwitchToThisWindow(hWnd, true);
@@ -264,13 +260,9 @@ namespace winrt::OCR::implementation
         }
     }
 
-    void NewOverlay::border_Loaded(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    void NewOverlay::border_Loaded(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
-        mainBorder().ProtectedCursor(Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::SizeAll));
+        mainBorder().ProtectedCursor(
+            Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::SizeAll));
     }
-
-
-
-    
-    
 }

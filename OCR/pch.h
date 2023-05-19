@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 #pragma once
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <unknwn.h>
 #include <restrictederrorinfo.h>
@@ -27,21 +30,41 @@
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <wil/cppwinrt_helpers.h>
 
-#include <future>
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <d3d11_4.h>
-#include <winrt/Windows.Graphics.Capture.h>
+#include <d2d1_3.h>
 #include <inspectable.h>
-#include <robmikh.common/direct3d11.interop.h>
-#include <wincodec.h>
-#include <robmikh.common/d3dHelpers.h>
+#include <pplawait.h>
+#include <shobjidl_core.h>
+#include <strsafe.h>
 
-namespace util
-{
-    using namespace robmikh::common::uwp;
-}
-#include <microsoft.ui.xaml.window.h>
-#include <winrt/Microsoft.UI.Windowing.h>
-#include <microsoft.ui.xaml.media.dxinterop.h>
+#include <winrt/Windows.Graphics.Capture.h>
+#include <winrt/Windows.Graphics.Imaging.h>
+#include <winrt/Windows.Media.Ocr.h>
+#include <winrt/Windows.Security.Cryptography.h>
+#include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
-#include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.Graphics.Canvas.h>
 #include <winrt/Microsoft.UI.Input.h>
+#include <winrt/Microsoft.UI.Interop.h>
+#include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+#include <microsoft.ui.xaml.media.dxinterop.h>
+#include <microsoft.ui.xaml.window.h>
+
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+#include <GdiPlus.h>
+#pragma comment(lib, "gdiplus.lib")
+
+#define _AFXDLL
+// #include <WinSock2.h>
+#include <afxwin.h>
+#include <atlimage.h>
+
+#include "WindowHelper.h"
+#include "StringHelper.h"
+#include "CaptureHelper.h"
+
+#define  WM_SHOWCONFIG (WM_USER + 1)

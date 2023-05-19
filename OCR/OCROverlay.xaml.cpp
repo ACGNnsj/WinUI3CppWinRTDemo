@@ -7,11 +7,7 @@
 #include "OCROverlay.g.cpp"
 #endif
 #include <numeric>
-#include <winrt/Microsoft.UI.Windowing.h>
-
-#include "StringHelper.h"
-#include "WindowHelper.h"
-
+ 
 // using namespace winrt;
 // using namespace Microsoft::UI::Xaml;
 
@@ -21,6 +17,7 @@
 namespace winrt::OCR::implementation
 {
     using namespace Microsoft::UI::Xaml;
+
     OCROverlay::OCROverlay()
     {
         InitializeComponent();
@@ -39,28 +36,21 @@ namespace winrt::OCR::implementation
     void OCROverlay::myButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         myButton().Content(box_value(L"Clicked"));
-        /*auto newWindow = Window();
-        MicaPage micaPage = MicaPage(newWindow);
-        newWindow.ExtendsContentIntoTitleBar(true);
-        newWindow.Content(micaPage);
-        //micaPage.AfterInit(newWindow);
-        auto appWindow = newWindow.AppWindow();
-        winrt::Windows::Graphics::SizeInt32 size = { 800,600 };
-        appWindow.Resize(size);
-        newWindow.Activate();*/
-        auto newWindow = FormalOverlay();
+        const auto newWindow = Window();
+        newWindow.Content(OverlayPanel(newWindow));
+        // auto newWindow = FormalOverlay();
         newWindow.Activate();
-        HWND hWnd = WindowHelper::GetWindowHandle(newWindow);
-        LONG_PTR nStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
-        uint32_t nStyleFirst = nStyle >> 32;
-        uint32_t nStyleSecond = nStyle & 0xFFFFFFFF;
+        const HWND hWnd = WindowHelper::GetWindowHandle(newWindow);
+        const LONG_PTR nStyle = GetWindowLongPtr(hWnd, GWL_STYLE);
+        const uint32_t nStyleFirst = nStyle >> 32;
+        const uint32_t nStyleSecond = nStyle & 0xFFFFFFFF;
         std::array<char, 8> hexNStyleFirst = impl::uint32_to_hex<char>(nStyleFirst);
         hstring hexNStyleString = std::accumulate(hexNStyleFirst.begin(), hexNStyleFirst.end(), hstring(L"0x"),
                                                   [](const hstring& a, const char b) { return a + b; });
         std::array<char, 8> hexNStyleSecond = impl::uint32_to_hex<char>(nStyleSecond);
         hexNStyleString = hexNStyleString + std::accumulate(hexNStyleSecond.begin(), hexNStyleSecond.end(),
                                                             hstring(L""),
-                                                            [](hstring a, const char& b) { return a + b; });
+                                                            [](const hstring& a, const char& b) { return a + b; });
         WindowHelper::OpenMessageWindow(
             L"new overlay " + hexNStyleString + L" " +
             StringHelper::to_hex_hstring(GetWindowLongPtr(hWnd, GWL_EXSTYLE)));

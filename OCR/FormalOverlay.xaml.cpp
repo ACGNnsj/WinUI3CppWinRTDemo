@@ -6,10 +6,6 @@
 #if __has_include("FormalOverlay.g.cpp")
 #include "FormalOverlay.g.cpp"
 #endif
-#include <dwmapi.h>
-#include <GdiPlus.h>
-#include <WindowHelper.h>
-#pragma comment(lib, "gdiplus.lib")
 // using namespace winrt;
 // using namespace Microsoft::UI::Xaml;
 
@@ -19,6 +15,7 @@
 namespace winrt::OCR::implementation
 {
     using namespace Microsoft::UI::Xaml;
+
     FormalOverlay::FormalOverlay()
     {
         InitializeComponent();
@@ -29,7 +26,7 @@ namespace winrt::OCR::implementation
         _presenter.SetBorderAndTitleBar(false, false);
         _presenter.IsResizable(false);
         //_apw.TitleBar().ExtendsContentIntoTitleBar();
-        auto pvAttribute = DWMWCP_DEFAULT;
+        // auto pvAttribute = DWMWCP_DEFAULT;
         //DwmSetWindowAttribute(hWndMain, DWMWA_WINDOW_CORNER_PREFERENCE, &pvAttribute, sizeof(DWMWINDOWATTRIBUTE));
         WindowHelper::DisableRoundedCorner(hWndMain);
         auto closedRevoker = this->Closed(auto_revoke, [&](auto&&, auto&&)
@@ -195,7 +192,7 @@ namespace winrt::OCR::implementation
         auto properties = e.GetCurrentPoint(sd).Properties();
         if (properties.IsLeftButtonPressed())
         {
-            bool result = sd.CapturePointer(e.Pointer());
+            [[maybe_unused]] bool result = sd.CapturePointer(e.Pointer());
             nXWindow = _apw.Position().X;
             nYWindow = _apw.Position().Y;
             POINT pt;
@@ -266,8 +263,7 @@ namespace winrt::OCR::implementation
         }
     }
 
-    void FormalOverlay::border_MoveOver(Windows::Foundation::IInspectable const& sender,
-                                        RoutedEventArgs const& e)
+    void FormalOverlay::border_MoveOver(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
         // this->ProtectedCursor(Microsoft::UI::Input::InputSystemCursor::Create(Microsoft::UI::Input::InputSystemCursorShape::SizeAll));
     }

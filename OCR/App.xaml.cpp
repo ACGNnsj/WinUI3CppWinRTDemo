@@ -5,6 +5,7 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+// #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -43,6 +44,27 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
-    window = make<MainWindow>();
+    // window = make<MainWindow>();
+    window = Window();
+    window.Content(OverlayPanel(window));
     window.Activate();
+    NOTIFYICONDATA nid = {};
+    nid.cbSize = sizeof(NOTIFYICONDATA);
+    nid.dwInfoFlags = NIIF_LARGE_ICON;
+    nid.guidItem = {0x1, 0x2, 0x3, {0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb}};
+    nid.hWnd = WindowHelper::GetWindowHandle(window);
+    StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test application");
+    nid.uFlags = NIF_GUID | NIF_TIP | NIF_ICON | NIF_MESSAGE | NIF_SHOWTIP;
+    nid.uVersion = NOTIFYICON_VERSION_4;
+ 
+    HICON hIcon;
+ 
+    const hstring currentDirectory = StringHelper::GetCurrentDirectory() + L"Assets\\Square44x44Logo.scale-200.png";
+    Gdiplus::Bitmap bitmap(currentDirectory.c_str());
+    WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory);
+  
+    bitmap.GetHICON(&hIcon);
+    nid.hIcon = hIcon;
+    Shell_NotifyIcon(NIM_ADD, &nid);
+    Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }

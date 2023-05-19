@@ -7,9 +7,7 @@
 #if __has_include("OverlayWindow.g.cpp")
 #include "OverlayWindow.g.cpp"
 #endif
-#include <dwmapi.h>
-#include <GdiPlus.h>
-#pragma comment(lib, "gdiplus.lib")
+
 // #include <gdiplusinit.h>
 // #include <gdiplusflat.h>
 // using namespace Gdiplus;
@@ -200,7 +198,7 @@ namespace winrt::OCR::implementation
         auto properties = e.GetCurrentPoint(sd).Properties();
         if (properties.IsLeftButtonPressed())
         {
-            bool result = sd.CapturePointer(e.Pointer());
+            [[maybe_unused]] bool result = sd.CapturePointer(e.Pointer());
             nXWindow = _apw.Position().X;
             nYWindow = _apw.Position().Y;
             POINT pt;

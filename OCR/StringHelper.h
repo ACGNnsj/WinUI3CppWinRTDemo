@@ -1,9 +1,12 @@
 ﻿#pragma once
-
-class StringHelper
+namespace winrt::OCR
 {
-    static winrt::hstring to_hex_digit(unsigned char value);
+    class StringHelper
+    {
+        static hstring to_hex_digit(unsigned char value);
 
-public:
-    static winrt::hstring to_hex_hstring(__int64 value);
-};
+    public:
+        static hstring to_hex_hstring(__int64 value);
+        static hstring GetCurrentDirectory();
+    };
+}

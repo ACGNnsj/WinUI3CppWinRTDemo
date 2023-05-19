@@ -11,6 +11,7 @@
     <Page Include="OverlayWindow.xaml" />
     <Page Include="NewOverlay.xaml" />
     <Page Include="FormalOverlay.xaml" />
+    <Page Include="OverlayPanel.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -20,17 +21,15 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
-    <ClCompile Include="ScreenCapture.cpp" />
-    <ClCompile Include="SimpleCapture.cpp" />
     <ClCompile Include="WindowHelper.cpp" />
     <ClCompile Include="StringHelper.cpp" />
+    <ClCompile Include="CaptureHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="ScreenCapture.h" />
-    <ClInclude Include="SimpleCapture.h" />
     <ClInclude Include="WindowHelper.h" />
     <ClInclude Include="StringHelper.h" />
+    <ClInclude Include="CaptureHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
