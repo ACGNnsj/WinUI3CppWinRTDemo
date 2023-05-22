@@ -14,6 +14,9 @@ namespace winrt::OCR::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
 
     private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
+        winrt::Microsoft::UI::Xaml::Window window{nullptr};
     };
+
+    LRESULT CALLBACK SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass,
+                                  DWORD_PTR dwRefData);
 }

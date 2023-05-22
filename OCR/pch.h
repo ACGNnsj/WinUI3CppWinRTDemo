@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 #pragma once
+#define PY_SSIZE_T_CLEAN
+#include <python3.10/Python.h>
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -66,5 +68,6 @@
 #include "WindowHelper.h"
 #include "StringHelper.h"
 #include "CaptureHelper.h"
-
+#include "TranslateHelper.h"
+#include "WindowManager.h"
 #define  WM_SHOWCONFIG (WM_USER + 1)

@@ -37,7 +37,8 @@ namespace winrt::OCR::implementation
     {
         myButton().Content(box_value(L"Clicked"));
         const auto newWindow = Window();
-        newWindow.Content(OverlayPanel(newWindow));
+        auto overlayPanel=make<OverlayPanel>(newWindow);
+        newWindow.Content(overlayPanel);
         // auto newWindow = FormalOverlay();
         newWindow.Activate();
         const HWND hWnd = WindowHelper::GetWindowHandle(newWindow);

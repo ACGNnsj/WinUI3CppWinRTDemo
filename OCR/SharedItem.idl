@@ -1,0 +1,7 @@
+﻿namespace OCR
+{
+    runtimeclass SharedItem : [default] Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+		SharedItem();
+	}
+}

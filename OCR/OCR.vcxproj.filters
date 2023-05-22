@@ -12,6 +12,7 @@
     <Page Include="NewOverlay.xaml" />
     <Page Include="FormalOverlay.xaml" />
     <Page Include="OverlayPanel.xaml" />
+    <Page Include="ConfigPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -24,12 +25,14 @@
     <ClCompile Include="WindowHelper.cpp" />
     <ClCompile Include="StringHelper.cpp" />
     <ClCompile Include="CaptureHelper.cpp" />
+    <ClCompile Include="TranslateHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="WindowHelper.h" />
     <ClInclude Include="StringHelper.h" />
     <ClInclude Include="CaptureHelper.h" />
+    <ClInclude Include="TranslateHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -70,9 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
