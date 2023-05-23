@@ -21,6 +21,7 @@ namespace winrt::OCR::implementation
 
     OverlayPanel::OverlayPanel(const Window& outerWindow)
     {
+        m_sharedItem = SharedItem::Instance();
         InitializeComponent();
         AfterInitialization(outerWindow);
     }
@@ -99,6 +100,7 @@ namespace winrt::OCR::implementation
         nWidth = 800;
         nHeight = 600;
         WindowHelper::SetActualWindowPos(hWndMain, HWND_TOPMOST, nXWindow, nYWindow, nWidth, nHeight, 0);
+        UpdateSharedItem();
         // WindowHelper::OpenMessageWindow(
         //     to_hstring(_apw.Position().X) + L" " + to_hstring(_apw.Position().Y) + L" " + to_hstring(_apw.Size().Width)
         //     + L" " + to_hstring(_apw.Size().Height));
@@ -250,6 +252,7 @@ namespace winrt::OCR::implementation
             nWidth = _apw.Size().Width;
             nHeight = _apw.Size().Height;
             cursorPosition = CursorPosition::Center;
+            UpdateSharedItem();
         }
         else if (properties.IsRightButtonPressed())
         {
@@ -376,6 +379,7 @@ namespace winrt::OCR::implementation
         // WindowHelper::OpenMessageWindow(L"border released");
         nXWindow = _apw.Position().X;
         nYWindow = _apw.Position().Y;
+        UpdatePosition();
     }
 
     void OverlayPanel::border_PointerMoved(Windows::Foundation::IInspectable const& sender,
@@ -486,6 +490,7 @@ namespace winrt::OCR::implementation
         nWidth = _apw.Size().Width;
         nHeight = _apw.Size().Height;
         [[maybe_unused]] auto result = sender.try_as<UIElement>().CapturePointer(e.Pointer());
+        UpdateSharedItem();
     }
 
     void OverlayPanel::border_PointerReleased(Windows::Foundation::IInspectable const& sender,
@@ -496,6 +501,7 @@ namespace winrt::OCR::implementation
         // cursorPosition = CursorPosition::Undefined;
         nWidth = _apw.Size().Width;
         nHeight = _apw.Size().Height;
+        UpdateSize();
     }
 
     int32_t OverlayPanel::MyProperty()
@@ -526,5 +532,23 @@ namespace winrt::OCR::implementation
     void OverlayPanel::MainBorderMargin(double value)
     {
         mainBorderMargin = value;
+    }
+
+    void OverlayPanel::UpdateSharedItem()
+    {
+        UpdateSize();
+        UpdatePosition();
+    }
+
+    void OverlayPanel::UpdateSize()
+    {
+        m_sharedItem.Width(nWidth);
+        m_sharedItem.Height(nHeight);
+    }
+
+    void OverlayPanel::UpdatePosition()
+    {
+        m_sharedItem.X(nXWindow);
+        m_sharedItem.Y(nYWindow);
     }
 }

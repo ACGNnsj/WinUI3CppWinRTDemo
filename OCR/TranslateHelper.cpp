@@ -5,6 +5,14 @@ namespace winrt::OCR
 {
     hstring TranslateHelper::Translate(const char* text, const char* from, const char* to)
     {
+        const auto localSettings = Windows::Storage::ApplicationData::Current().LocalSettings();
+        const auto pyHome = unbox_value_or(localSettings.Values().TryLookup(L"pyHome"), L"");
+        const auto sitePackages = unbox_value_or(localSettings.Values().TryLookup(L"sitePackages"), L"");
+        if (pyHome.empty() || sitePackages.empty())
+        {
+            WindowHelper::OpenMessageWindow(L"pyHome or sitePackages is empty");
+            return L"";
+        }
         Py_SetPath(L"D:\\visualstudio\\OCRTranslator\\translator;"
             // "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\python310.zip;"
             "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\DLLs;"

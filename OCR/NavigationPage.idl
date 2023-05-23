@@ -8,6 +8,5 @@ namespace OCR
     {
         NavigationPage();
         NavigationPage(Microsoft.UI.Xaml.Window window);
-        Int32 MyProperty;
     }
 }

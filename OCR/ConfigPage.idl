@@ -7,7 +7,7 @@ namespace OCR
     [default_interface]
     runtimeclass ConfigPage : Microsoft.UI.Xaml.Controls.Page
     {
-//        ConfigPage();
+        ConfigPage();
         ConfigPage(Microsoft.UI.Xaml.Window window);
         Int32 MyProperty;
         SharedItem SharedItem { get; };

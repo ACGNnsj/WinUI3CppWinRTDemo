@@ -26,24 +26,15 @@ namespace winrt::OCR::implementation
         InitializeComponent();
     }
 
-    int32_t NavigationPage::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void NavigationPage::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
 
     void NavigationPage::ContentFrame_NavigationFailed(Windows::Foundation::IInspectable const&,
-                                                       Microsoft::UI::Xaml::Navigation::NavigationFailedEventArgs const&
-                                                       args)
+                                                       Navigation::NavigationFailedEventArgs const& args)
     {
     }
 
     void NavigationPage::NavView_Loaded(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
+        [[maybe_unused]] auto hr = ContentFrame().Navigate(xaml_typename<OCR::ConfigPage>(), window);
     }
 
     void NavigationPage::NavView_ItemInvoked(Windows::Foundation::IInspectable const&,
@@ -58,7 +49,7 @@ namespace winrt::OCR::implementation
             Windows::UI::Xaml::Interop::TypeName pageTypeName;
             pageTypeName.Name = unbox_value<hstring>(args.InvokedItemContainer().Tag());
             pageTypeName.Kind = Windows::UI::Xaml::Interop::TypeKind::Metadata;
-            ContentFrame().Navigate(pageTypeName, box_value(window));
+            [[maybe_unused]] auto hr = ContentFrame().Navigate(pageTypeName, window);
         }
     }
 

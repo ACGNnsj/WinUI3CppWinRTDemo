@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Page
     x:Class="OCR.WindowConfigPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,8 +8,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <NumberBox Header="width" SmallChange="10" LargeChange="100" Value="{x:Bind SharedItem.Width, Mode=OneWay}"/>
+        <NumberBox Grid.Column="1" Header="height" SmallChange="10" LargeChange="100" Value="{x:Bind SharedItem.Height, Mode=OneWay}"/>
+        <NumberBox Grid.Column="2" Header="x" SmallChange="10" LargeChange="100" Value="{x:Bind SharedItem.X, Mode=OneWay}"/>
+        <NumberBox Grid.Column="3" Header="y" SmallChange="10" LargeChange="100" Value="{x:Bind SharedItem.Y, Mode=OneWay}"/>
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Click="Apply_Click">Apply</Button>
+        <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Click="Reset_Click">Reset</Button>
+    </Grid>
 </Page>

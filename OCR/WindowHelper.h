@@ -10,7 +10,8 @@ namespace winrt::OCR
                                        UINT uFlags);
         static void DisableRoundedCorner(HWND handle);
         static void GetDesktopResolution(int& horizontal, int& vertical);
-        static void OpenMessageWindow(const hstring& message);
+        static void OpenMessageWindow(const hstring& message, const hstring& title = L"message",
+                                      const Microsoft::UI::Xaml::Window& window = nullptr);
     };
 
     enum class CursorPosition : UINT

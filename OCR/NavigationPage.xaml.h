@@ -12,8 +12,7 @@ namespace winrt::OCR::implementation
         NavigationPage();
         NavigationPage(const Microsoft::UI::Xaml::Window& window);
         Microsoft::UI::Xaml::Window window{nullptr};
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
+
         void ContentFrame_NavigationFailed(
             Windows::Foundation::IInspectable const& /* sender */,
             Microsoft::UI::Xaml::Navigation::NavigationFailedEventArgs const& args);

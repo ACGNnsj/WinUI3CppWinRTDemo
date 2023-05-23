@@ -66,12 +66,34 @@ namespace winrt::OCR
         vertical = desktop.bottom;
     }
 
-    void WindowHelper::OpenMessageWindow(const hstring& message)
+    void WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
+                                         const Microsoft::UI::Xaml::Window& window)
     {
-        const auto window = Microsoft::UI::Xaml::Window();
+        if (window)
+        {
+            Microsoft::UI::Xaml::Controls::ContentDialog msg{};
+            msg.XamlRoot(window.Content().XamlRoot());
+            msg.Title(box_value(title));
+            msg.Content(box_value(message));
+            msg.PrimaryButtonText(L"OK");
+            msg.CloseButtonText(L"Cancel");
+            msg.as<IInitializeWithWindow>()->Initialize(GetWindowHandle(window));
+            auto result = msg.ShowAsync();
+            return;
+        }
+        if (const auto hWnd = WindowManager::mainWindowHandle; hWnd)
+        {
+            Windows::UI::Popups::MessageDialog msg{message, title};
+            msg.DefaultCommandIndex(0);
+            msg.CancelCommandIndex(1);
+            msg.as<IInitializeWithWindow>()->Initialize(hWnd);
+            auto command = msg.ShowAsync();
+            return;
+        }
+        const auto msgWindow = Microsoft::UI::Xaml::Window();
         const auto textBlock = Microsoft::UI::Xaml::Controls::TextBlock();
         textBlock.Text(message);
-        window.Content(textBlock);
-        window.Activate();
+        msgWindow.Content(textBlock);
+        msgWindow.Activate();
     }
 }

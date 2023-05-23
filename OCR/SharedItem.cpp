@@ -31,6 +31,62 @@ namespace winrt::OCR::implementation
         return m_sitePackages;
     }
 
+    double SharedItem::Width()
+    {
+        return m_width;
+    }
+
+    void SharedItem::Width(double value)
+    {
+        if (m_width != value)
+        {
+            m_width = value;
+            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Width"});
+        }
+    }
+
+    double SharedItem::Height()
+    {
+        return m_height;
+    }
+
+    void SharedItem::Height(double value)
+    {
+        if (m_height != value)
+        {
+            m_height = value;
+            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Height"});
+        }
+    }
+
+    double SharedItem::X()
+    {
+        return m_x;
+    }
+
+    void SharedItem::X(double value)
+    {
+        if (m_x != value)
+        {
+            m_x = value;
+            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"X"});
+        }
+    }
+
+    double SharedItem::Y()
+    {
+        return m_y;
+    }
+
+    void SharedItem::Y(double value)
+    {
+        if (m_y != value)
+        {
+            m_y = value;
+            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Y"});
+        }
+    }
+
     void SharedItem::SitePackages(hstring const& value)
     {
         if (m_sitePackages != value)

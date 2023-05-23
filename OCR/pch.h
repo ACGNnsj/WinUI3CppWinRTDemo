@@ -45,6 +45,7 @@
 #include <winrt/Windows.Media.Ocr.h>
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.Pickers.h>
+#include <winrt/Windows.UI.Popups.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.Graphics.Canvas.h>
 #include <winrt/Microsoft.UI.Input.h>
@@ -70,4 +71,5 @@
 #include "CaptureHelper.h"
 #include "TranslateHelper.h"
 #include "WindowManager.h"
+#include "SharedItem.h"
 #define  WM_SHOWCONFIG (WM_USER + 1)

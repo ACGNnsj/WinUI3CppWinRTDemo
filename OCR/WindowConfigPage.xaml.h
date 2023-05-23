@@ -9,15 +9,15 @@ namespace winrt::OCR::implementation
 {
     struct WindowConfigPage : WindowConfigPageT<WindowConfigPage>
     {
+        WindowConfigPage();
         WindowConfigPage(const Microsoft::UI::Xaml::Window& window);
         Microsoft::UI::Xaml::Window window{nullptr};
-
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
-
-        void myButton_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
-    private:
-        WindowConfigPage()=delete;
+        OCR::SharedItem SharedItem();
+        void Apply_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
+        void Reset_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
+        void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
+     private:
+        OCR::SharedItem m_sharedItem{nullptr};
     };
 }
 

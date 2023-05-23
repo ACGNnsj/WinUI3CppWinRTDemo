@@ -15,29 +15,35 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::OCR::implementation
 {
-    // WindowConfigPage::WindowConfigPage()
-    // {
-    //     InitializeComponent();
-    // }
+    WindowConfigPage::WindowConfigPage()
+    {
+        m_sharedItem = SharedItem::Instance();
+        InitializeComponent();
+    }
 
     WindowConfigPage::WindowConfigPage(const Window& window)
     {
+        m_sharedItem = SharedItem::Instance();
         this->window = window;
         InitializeComponent();
     }
 
-    int32_t WindowConfigPage::MyProperty()
+    OCR::SharedItem WindowConfigPage::SharedItem()
     {
-        throw hresult_not_implemented();
+        return m_sharedItem;
     }
 
-    void WindowConfigPage::MyProperty(int32_t /* value */)
+    void WindowConfigPage::Apply_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args)
     {
-        throw hresult_not_implemented();
     }
 
-    void WindowConfigPage::myButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void WindowConfigPage::Reset_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args)
     {
-        myButton().Content(box_value(L"Clicked"));
+    }
+
+    void WindowConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)
+    {
+        auto window = e.Parameter().try_as<Window>();
+        this->window = window;
     }
 }

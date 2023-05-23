@@ -5,5 +5,9 @@
 		SharedItem();
 		String PyHome;
 		String SitePackages;
+		Double Width;
+        Double Height;
+        Double X;
+        Double Y;
 	}
 }

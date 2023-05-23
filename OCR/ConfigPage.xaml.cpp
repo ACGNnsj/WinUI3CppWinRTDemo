@@ -4,7 +4,6 @@
 #include "pch.h"
 #include "ConfigPage.xaml.h"
 
-#include "SharedItem.h"
 #if __has_include("ConfigPage.g.cpp")
 #include "ConfigPage.g.cpp"
 #endif
@@ -17,6 +16,12 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::OCR::implementation
 {
+    ConfigPage::ConfigPage()
+    {
+        m_sharedItem = SharedItem::Instance();
+        InitializeComponent();
+    }
+
     ConfigPage::ConfigPage(const Window& window)
     {
         m_sharedItem = SharedItem::Instance();
@@ -66,5 +71,11 @@ namespace winrt::OCR::implementation
         const auto localSettings = Windows::Storage::ApplicationData::Current().LocalSettings();
         localSettings.Values().Insert(L"pyHome", box_value(m_sharedItem.PyHome()));
         localSettings.Values().Insert(L"sitePackages", box_value(m_sharedItem.SitePackages()));
+    }
+
+    void ConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)
+    {
+        auto window = e.Parameter().try_as<Window>();
+        this->window = window;
     }
 }

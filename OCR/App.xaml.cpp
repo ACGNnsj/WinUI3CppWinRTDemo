@@ -53,6 +53,9 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     window.Activate();
 
     HWND hWnd = WindowHelper::GetWindowHandle(window);
+
+    WindowManager::mainWindowHandle = hWnd;
+
     SetWindowSubclass(hWnd, SubclassProc, 0, 0);
 
     NOTIFYICONDATA nid = {};
@@ -68,16 +71,16 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 
     const hstring currentDirectory = StringHelper::GetCurrentDirectory() + L"Assets\\Square44x44Logo.scale-200.png";
     Gdiplus::Bitmap bitmap(currentDirectory.c_str());
-    WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory);
+    WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory, L"directory", window);
 
     bitmap.GetHICON(&hIcon);
     nid.hIcon = hIcon;
     Shell_NotifyIcon(NIM_ADD, &nid);
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
     // WindowHelper::OpenMessageWindow(TranslateHelper::Translate("おはようございます", "ja", "zh"));
-    WindowHelper::OpenMessageWindow(
-        winrt::xaml_typename<OCR::ConfigPage>().Name + L" " + to_hstring(
-            static_cast<int32_t>(winrt::xaml_typename<OCR::ConfigPage>().Kind)));
+    // WindowHelper::OpenMessageWindow(
+    //     winrt::xaml_typename<OCR::ConfigPage>().Name + L" " + to_hstring(
+    //         static_cast<int32_t>(winrt::xaml_typename<OCR::ConfigPage>().Kind)));
 }
 
 LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
@@ -115,6 +118,7 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                     const auto configWindow = Window();
                     // configWindow.Content(ConfigPage(configWindow));
                     configWindow.Content(NavigationPage(configWindow));
+                    // configWindow.Content(WindowConfigPage(configWindow));
                     configWindow.Activate();
                     break;
                 }
