@@ -51,6 +51,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     auto overlayPanel = make<OverlayPanel>(window);
     window.Content(overlayPanel);
     window.Activate();
+
     HWND hWnd = WindowHelper::GetWindowHandle(window);
     SetWindowSubclass(hWnd, SubclassProc, 0, 0);
 
@@ -74,6 +75,9 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     Shell_NotifyIcon(NIM_ADD, &nid);
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
     // WindowHelper::OpenMessageWindow(TranslateHelper::Translate("おはようございます", "ja", "zh"));
+    WindowHelper::OpenMessageWindow(
+        winrt::xaml_typename<OCR::ConfigPage>().Name + L" " + to_hstring(
+            static_cast<int32_t>(winrt::xaml_typename<OCR::ConfigPage>().Kind)));
 }
 
 LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
@@ -109,7 +113,8 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                 {
                     // WindowHelper::OpenMessageWindow(L"Configure");
                     const auto configWindow = Window();
-                    configWindow.Content(ConfigPage(configWindow));
+                    // configWindow.Content(ConfigPage(configWindow));
+                    configWindow.Content(NavigationPage(configWindow));
                     configWindow.Activate();
                     break;
                 }

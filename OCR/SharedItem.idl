@@ -3,5 +3,7 @@
     runtimeclass SharedItem : [default] Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
 		SharedItem();
+		String PyHome;
+		String SitePackages;
 	}
 }

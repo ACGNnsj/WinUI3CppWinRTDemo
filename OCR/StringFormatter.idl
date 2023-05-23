@@ -1,0 +1,7 @@
+namespace OCR
+{
+    runtimeclass StringFormatter : [default] Microsoft.UI.Xaml.Data.IValueConverter
+    {
+		StringFormatter();
+	}
+}

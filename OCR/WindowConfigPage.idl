@@ -1,0 +1,13 @@
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
+
+namespace OCR
+{
+    [default_interface]
+    runtimeclass WindowConfigPage : Microsoft.UI.Xaml.Controls.Page
+    {
+//        WindowConfigPage();
+        WindowConfigPage(Microsoft.UI.Xaml.Window window);
+        Int32 MyProperty;
+    }
+}

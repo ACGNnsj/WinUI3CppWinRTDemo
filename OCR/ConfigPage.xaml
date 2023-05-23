@@ -8,18 +8,35 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock>path</TextBlock>
-            <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button x:Name="saveButton">Save</Button>
-        </StackPanel>
-    </Grid>
-
+    <TabView>
+        <TabView.TabItems>
+            <TabViewItem Header="Path Setting">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock x:Name="pyHomeTextBlock"
+                                   Text="{x:Bind SharedItem.PyHome, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='PyHome Path: {}'}" />
+                        <Button x:Name="pyHomeButton" Click="pyHomeButton_Click">Choose Path</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock x:Name="sitePackagesBlock"
+                                   Text="{x:Bind SharedItem.SitePackages, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='SitePackages Path: {}'}" />
+                        <Button x:Name="sitePackagesButton" Click="sitePackagesButton_Click">Choose Path</Button>
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Button x:Name="saveButton" Click="saveButton_Click">Save</Button>
+                    </StackPanel>
+                </Grid>
+            </TabViewItem>
+        </TabView.TabItems>
+    </TabView>
 </Page>

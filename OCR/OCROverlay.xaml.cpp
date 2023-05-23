@@ -6,8 +6,9 @@
 #if __has_include("OCROverlay.g.cpp")
 #include "OCROverlay.g.cpp"
 #endif
+#include <afxtempl.h>
 #include <numeric>
- 
+
 // using namespace winrt;
 // using namespace Microsoft::UI::Xaml;
 
@@ -37,7 +38,8 @@ namespace winrt::OCR::implementation
     {
         myButton().Content(box_value(L"Clicked"));
         const auto newWindow = Window();
-        auto overlayPanel=make<OverlayPanel>(newWindow);
+        // auto overlayPanel=make<OverlayPanel>(newWindow);
+        auto overlayPanel = OCR::OverlayPanel(newWindow);
         newWindow.Content(overlayPanel);
         // auto newWindow = FormalOverlay();
         newWindow.Activate();

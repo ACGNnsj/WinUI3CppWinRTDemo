@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
+import "SharedItem.idl";
 
 namespace OCR
 {
     [default_interface]
     runtimeclass ConfigPage : Microsoft.UI.Xaml.Controls.Page
     {
-        ConfigPage();
+//        ConfigPage();
         ConfigPage(Microsoft.UI.Xaml.Window window);
         Int32 MyProperty;
+        SharedItem SharedItem { get; };
     }
 }
