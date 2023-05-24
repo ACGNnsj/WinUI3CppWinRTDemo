@@ -5,7 +5,6 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
-#include "TranslateHelper.h"
 // #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 
 using namespace winrt;

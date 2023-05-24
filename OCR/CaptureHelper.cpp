@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
 
-
 namespace winrt::OCR
 {
     concurrency::task<long> CaptureHelper::CaptureCurrentWindowAsync()

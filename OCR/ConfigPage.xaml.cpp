@@ -4,6 +4,8 @@
 #include "pch.h"
 #include "ConfigPage.xaml.h"
 
+#include "LanguageItem.h"
+
 #if __has_include("ConfigPage.g.cpp")
 #include "ConfigPage.g.cpp"
 #endif
@@ -20,13 +22,15 @@ namespace winrt::OCR::implementation
     {
         m_sharedItem = SharedItem::Instance();
         InitializeComponent();
+        InitializeLanguageSettings();
     }
 
     ConfigPage::ConfigPage(const Window& window)
     {
+        this->window = window;
         m_sharedItem = SharedItem::Instance();
         InitializeComponent();
-        this->window = window;
+        InitializeLanguageSettings();
         // this->DataContext(m_sharedItem);
     }
 
@@ -77,5 +81,24 @@ namespace winrt::OCR::implementation
     {
         auto window = e.Parameter().try_as<Window>();
         this->window = window;
+    }
+
+    void ConfigPage::InitializeLanguageSettings()
+    {
+        auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
+        hstring text = L"";
+        OCR::implementation::LanguageItem::RegisterDependencyProperty();
+        for (auto supported_language : supportedLanguages)
+        {
+            auto languageTag = supported_language.LanguageTag();
+            auto displayName = supported_language.DisplayName();
+            text = text + languageTag + L" " + displayName + L"\n";
+            OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
+            item.DisplayName(displayName);
+            item.LanguageTag(languageTag);
+            sourceComboBox().Items().Append(item);
+            targetComboBox().Items().Append(item);
+        }
+        WindowHelper::OpenMessageWindow(text);
     }
 }

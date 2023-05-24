@@ -1,0 +1,12 @@
+﻿namespace OCR
+{
+    [default_interface]
+    runtimeclass LanguageItem : Microsoft.UI.Xaml.DependencyObject
+    {
+		LanguageItem();
+		static Microsoft.UI.Xaml.DependencyProperty DisplayNameProperty{ get; };
+		String DisplayName;
+		static Microsoft.UI.Xaml.DependencyProperty LanguageTagProperty{ get; };
+		String LanguageTag;
+	}
+}

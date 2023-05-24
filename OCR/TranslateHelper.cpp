@@ -1,5 +1,4 @@
 ﻿#include "pch.h"
-#include "TranslateHelper.h"
 
 namespace winrt::OCR
 {
@@ -13,13 +12,17 @@ namespace winrt::OCR
             WindowHelper::OpenMessageWindow(L"pyHome or sitePackages is empty");
             return L"";
         }
-        Py_SetPath(L"D:\\visualstudio\\OCRTranslator\\translator;"
+
+        const auto sysPath = std::format(L"{}translator;{}\\DLLS;{}\\lib;{};", StringHelper::GetCurrentDirectory(),
+                                         pyHome, pyHome, sitePackages);
+        Py_SetPath(sysPath.c_str());
+        /*Py_SetPath(L"D:\\visualstudio\\OCRTranslator\\translator;"
             // "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\python310.zip;"
             "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\DLLs;"
             "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\lib;"
             // "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310;"
             // "D:\\visualstudio\\OCRTranslator\\translator\\.venv;"
-            "D:\\visualstudio\\OCRTranslator\\translator\\.venv\\lib\\site-packages;");
+            "D:\\visualstudio\\OCRTranslator\\translator\\.venv\\lib\\site-packages;");*/
         Py_Initialize();
         // PyObject* pName = PyUnicode_FromWideChar(L"add", -1);
         PyObject* pName = PyUnicode_FromWideChar(L"translate_wrapper", -1);

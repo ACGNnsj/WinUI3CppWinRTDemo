@@ -69,9 +69,9 @@ namespace winrt::OCR
     void WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
                                          const Microsoft::UI::Xaml::Window& window)
     {
-        if (window)
+        /*if (window)
         {
-            Microsoft::UI::Xaml::Controls::ContentDialog msg{};
+            const Microsoft::UI::Xaml::Controls::ContentDialog msg{};
             msg.XamlRoot(window.Content().XamlRoot());
             msg.Title(box_value(title));
             msg.Content(box_value(message));
@@ -80,10 +80,10 @@ namespace winrt::OCR
             msg.as<IInitializeWithWindow>()->Initialize(GetWindowHandle(window));
             auto result = msg.ShowAsync();
             return;
-        }
+        }*/
         if (const auto hWnd = WindowManager::mainWindowHandle; hWnd)
         {
-            Windows::UI::Popups::MessageDialog msg{message, title};
+            const Windows::UI::Popups::MessageDialog msg{message, title};
             msg.DefaultCommandIndex(0);
             msg.CancelCommandIndex(1);
             msg.as<IInitializeWithWindow>()->Initialize(hWnd);

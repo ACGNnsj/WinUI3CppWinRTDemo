@@ -25,6 +25,7 @@ namespace winrt::OCR::implementation
         void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
     private:
         OCR::SharedItem m_sharedItem{nullptr};
+        void InitializeLanguageSettings();
     };
 }
 
