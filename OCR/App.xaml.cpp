@@ -54,13 +54,20 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     HWND hWnd = WindowHelper::GetWindowHandle(window);
 
     WindowManager::mainWindowHandle = hWnd;
+    // WindowManager::overlayPanel = overlayPanel;
+    Window* windowPtr = (Window*)&WindowManager::mainWindow;
+    *windowPtr = window;
 
+    WindowHelper::GetDesktopResolution(WindowManager::monitorWidth, WindowManager::monitorHeight);
     SetWindowSubclass(hWnd, SubclassProc, 0, 0);
+
+    RegisterHotKey(hWnd, 1, WindowManager::modifierMask, WindowManager::hotkey);
 
     NOTIFYICONDATA nid = {};
     nid.cbSize = sizeof(NOTIFYICONDATA);
     nid.dwInfoFlags = NIIF_LARGE_ICON;
-    nid.guidItem = {0x1, 0x2, 0x3, {0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb}};
+    // {06936F19-FC12-4DA1-96ED-FADB06E31FA3}
+    nid.guidItem = {0x6936f19, 0xfc12, 0x4da1, {0x96, 0xed, 0xfa, 0xdb, 0x6, 0xe3, 0x1f, 0xa3}};
     nid.hWnd = hWnd;
     StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test application");
     nid.uCallbackMessage = WM_SHOWCONFIG;
@@ -123,7 +130,7 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                 }
             case 2:
                 {
-                    WindowHelper::OpenMessageWindow(L"Exit");
+                    // WindowHelper::OpenMessageWindow(L"Exit");
                     /*NOTIFYICONDATA nid = {};
                     nid.cbSize = sizeof(NOTIFYICONDATA);
                     nid.guidItem = {0x1, 0x2, 0x3, {0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb}};
@@ -141,9 +148,28 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
         }
     case WM_CLOSE:
         {
-            WindowHelper::OpenMessageWindow(L"WM_CLOSE");
+            // WindowHelper::OpenMessageWindow(L"WM_CLOSE");
+            PostMessage(hWnd, WM_QUIT, 0, 0);
             break;
         }
+    case WM_HOTKEY:
+        {
+            switch (wParam)
+            {
+            case 1:
+                {
+                    WindowHelper::OpenMessageWindow(L"WM_HOTKEY 1");
+                    break;
+                }
+            default: WindowHelper::OpenMessageWindow(hstring(L"wParam=") + wParam + L" lParam=" + lParam);
+            }
+            break;
+        }
+    case WM_CLEAN:
+        {
+            break;
+        }
+
     default: ;
     }
     return DefSubclassProc(hWnd, uMsg, wParam, lParam);

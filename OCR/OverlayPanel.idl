@@ -11,5 +11,6 @@ namespace OCR
         Int32 MyProperty;
         Double MainBorderThickness;
         Double MainBorderMargin;
+        void CleanCanvas();
     }
 }

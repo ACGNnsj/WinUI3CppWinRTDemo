@@ -22,6 +22,8 @@ namespace winrt::OCR::implementation
                                                                    Microsoft::UI::Xaml::RoutedEventArgs const& args);
         void saveButton_Click(Windows::Foundation::IInspectable const& sender,
                               Microsoft::UI::Xaml::RoutedEventArgs const& args);
+        void applyButton_Click(Windows::Foundation::IInspectable const& sender,
+                              Microsoft::UI::Xaml::RoutedEventArgs const& args);
         void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
     private:
         OCR::SharedItem m_sharedItem{nullptr};

@@ -56,6 +56,7 @@ namespace winrt::OCR::implementation
         void MainBorderThickness(double value);
         double MainBorderMargin();
         void MainBorderMargin(double value);
+        void CleanCanvas();
     private:
         OCR::SharedItem m_sharedItem{nullptr};
         void UpdateSharedItem();

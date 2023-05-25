@@ -74,3 +74,4 @@
 #include "WindowManager.h"
 #include "SharedItem.h"
 #define  WM_SHOWCONFIG (WM_USER + 1)
+#define  WM_CLEAN (WM_USER + 2)

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <winrt/Windows.UI.Xaml.Hosting.h>
 
 namespace winrt::OCR
 {
@@ -9,6 +10,20 @@ namespace winrt::OCR
         HWND hWnd{nullptr};
         windowNative->get_WindowHandle(&hWnd);
         return hWnd;
+    }
+
+    Microsoft::UI::Windowing::AppWindow WindowHelper::GetAppWindow(const HWND handle)
+    {
+        const auto windowId = Microsoft::UI::GetWindowIdFromWindow(handle);
+        return Microsoft::UI::Windowing::AppWindow::GetFromWindowId(windowId);
+    }
+
+    Microsoft::UI::Xaml::Window WindowHelper::GetWindow(HWND handle)
+    {
+        // Microsoft::UI::Windowing::AppWindow appWindow = GetAppWindow(handle);
+        /*Windows::UI::WindowManagement::AppWindow appWindow= Windows::UI::WindowManagement::AppWindow::GetFromWindowHandle(handle);
+        Windows::UI::Xaml::Hosting::ElementCompositionPreview::GetAppWindowContent(appWindow);*/
+        return nullptr;
     }
 
     RECT WindowHelper::GetSystemMargin(const HWND handle)
@@ -52,7 +67,7 @@ namespace winrt::OCR
         DwmSetWindowAttribute(handle, dwAttribute, &pvAttribute, sizeof(dwAttribute));
     }
 
-    void WindowHelper::GetDesktopResolution(int& horizontal, int& vertical)
+    /*void WindowHelper::GetDesktopResolution(auto& horizontal, auto& vertical)
     {
         RECT desktop;
         // Get a handle to the desktop window
@@ -64,7 +79,20 @@ namespace winrt::OCR
         // (horizontal, vertical)
         horizontal = desktop.right;
         vertical = desktop.bottom;
+    }*/
+
+    template <typename T>
+    void WindowHelper::GetDesktopResolution(T& horizontal, T& vertical)
+    {
+        RECT desktop;
+        const HWND hDesktop = GetDesktopWindow();
+        GetWindowRect(hDesktop, &desktop);
+        horizontal = desktop.right;
+        vertical = desktop.bottom;
     }
+
+    template void WindowHelper::GetDesktopResolution(int& horizontal, int& vertical);
+    template void WindowHelper::GetDesktopResolution(double& horizontal, double& vertical);
 
     void WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
                                          const Microsoft::UI::Xaml::Window& window)
@@ -94,6 +122,7 @@ namespace winrt::OCR
         const auto textBlock = Microsoft::UI::Xaml::Controls::TextBlock();
         textBlock.Text(message);
         msgWindow.Content(textBlock);
+        msgWindow.Title(title);
         msgWindow.Activate();
     }
 }

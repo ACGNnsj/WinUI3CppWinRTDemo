@@ -22,6 +22,7 @@
     <Midl Include="DoubleToThicknessConverter.idl" />
     <Midl Include="SharedItem.idl" />
     <Midl Include="StringFormatter.idl" />
+    <Midl Include="LanguageItem.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

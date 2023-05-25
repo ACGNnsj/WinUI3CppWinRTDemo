@@ -15,6 +15,7 @@ namespace winrt::OCR
 
         const auto sysPath = std::format(L"{}translator;{}\\DLLS;{}\\lib;{};", StringHelper::GetCurrentDirectory(),
                                          pyHome, pyHome, sitePackages);
+        WindowHelper::OpenMessageWindow(sysPath.c_str());
         Py_SetPath(sysPath.c_str());
         /*Py_SetPath(L"D:\\visualstudio\\OCRTranslator\\translator;"
             // "C:\\Users\\ootop\\AppData\\Local\\Programs\\Python\\Python310\\python310.zip;"

@@ -77,6 +77,19 @@ namespace winrt::OCR::implementation
         localSettings.Values().Insert(L"sitePackages", box_value(m_sharedItem.SitePackages()));
     }
 
+    void ConfigPage::applyButton_Click(Windows::Foundation::IInspectable const& sender, RoutedEventArgs const& args)
+    {
+        const auto selectedSourceLanguage = unbox_value_or(sourceComboBox().SelectedValue(), L"");
+        /*auto selectedSourceLanguageItem = unbox_value_or<OCR::LanguageItem>(sourceComboBox().SelectedItem(), nullptr);
+        WindowHelper::OpenMessageWindow(
+            selectedSourceLanguage + L" " + selectedSourceLanguageItem.LanguageTag() + L" " + selectedSourceLanguageItem
+            .DisplayName());*/
+        // auto selectedSourceLanguageItem = unbox_value_or(sourceComboBox().SelectedValue(), L"");
+        WindowManager::sourceLanguageTag = selectedSourceLanguage;
+        const auto selectedTargetLanguage = unbox_value_or(targetComboBox().SelectedValue(), L"");
+        WindowManager::targetLanguageTag = selectedTargetLanguage;
+    }
+
     void ConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)
     {
         auto window = e.Parameter().try_as<Window>();
@@ -93,11 +106,29 @@ namespace winrt::OCR::implementation
             auto languageTag = supported_language.LanguageTag();
             auto displayName = supported_language.DisplayName();
             text = text + languageTag + L" " + displayName + L"\n";
-            OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
+            /*OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
             item.DisplayName(displayName);
             item.LanguageTag(languageTag);
             sourceComboBox().Items().Append(item);
-            targetComboBox().Items().Append(item);
+            targetComboBox().Items().Append(item);*/
+            sourceComboBox().Items().Append(box_value(languageTag));
+            targetComboBox().Items().Append(box_value(languageTag));
+        }
+        if (!WindowManager::sourceLanguageTag.empty())
+        {
+            sourceComboBox().SelectedItem(box_value(WindowManager::sourceLanguageTag));
+        }
+        else
+        {
+            sourceComboBox().SelectedIndex(0);
+        }
+        if (!WindowManager::targetLanguageTag.empty())
+        {
+            targetComboBox().SelectedItem(box_value(WindowManager::targetLanguageTag));
+        }
+        else
+        {
+            targetComboBox().SelectedIndex(0);
         }
         WindowHelper::OpenMessageWindow(text);
     }

@@ -13,24 +13,28 @@
             <TabViewItem Header="Path Setting">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="70" />
+                        <RowDefinition Height="70" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="pyHomeTextBlock"
-                               Text="{x:Bind SharedItem.PyHome, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='PyHome Path: {}'}" />
-                    <Button Grid.Column="1" x:Name="pyHomeButton" Click="pyHomeButton_Click">Choose Path</Button>
-                    <TextBlock Grid.Row="1" x:Name="sitePackagesBlock"
-                               Text="{x:Bind SharedItem.SitePackages, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='SitePackages Path: {}'}" />
-                    <Button Grid.Row="1" Grid.Column="1" x:Name="sitePackagesButton" Click="sitePackagesButton_Click">Choose Path</Button>
-                    <ComboBox x:Name="sourceComboBox" Grid.Row="2" Grid.Column="0" Header="Source Language" DisplayMemberPath="DisplayName" />
-                    <ComboBox x:Name="targetComboBox" Grid.Row="2" Grid.Column="1" Header="Target Language" DisplayMemberPath="DisplayName" />
-                    <Button Grid.Row="3" x:Name="saveButton" Click="saveButton_Click">Save</Button>
+                               Text="{x:Bind SharedItem.PyHome, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='PyHome Path: {} '}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <Button Grid.Column="1" x:Name="pyHomeButton" Click="pyHomeButton_Click" VerticalAlignment="Center">Choose Path</Button>
+                    <TextBlock Grid.Column="2" x:Name="sitePackagesBlock"
+                               Text="{x:Bind SharedItem.SitePackages, Mode=OneWay, Converter={StaticResource StringFormatter}, ConverterParameter='SitePackages Path: {} '}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <Button Grid.Column="3" x:Name="sitePackagesButton" Click="sitePackagesButton_Click" VerticalAlignment="Center">Choose Path</Button>
+                    <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="saveButton" Click="saveButton_Click" HorizontalAlignment="Center" VerticalAlignment="Top">Save Path</Button>
+                    <!-- DisplayMemberPath="DisplayName" -->
+                    <ComboBox x:Name="sourceComboBox" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Source Language" HorizontalAlignment="1" />
+                    <ComboBox x:Name="targetComboBox" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Header="Target Language" HorizontalAlignment="Center" />
+                    <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="1" x:Name="applyButton" Click="applyButton_Click">Apply Language</Button>
                 </Grid>
             </TabViewItem>
         </TabView.TabItems>

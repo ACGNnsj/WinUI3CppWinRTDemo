@@ -95,10 +95,14 @@ namespace winrt::OCR::implementation
             }
             SetLayeredWindowAttributes(hWndMain, nColorBackground, 255, LWA_COLORKEY);
         }
-        nXWindow = 100;
-        nYWindow = 100;
-        nWidth = 800;
-        nHeight = 600;
+        // nXWindow = 100;
+        // nYWindow = 100;
+        // nWidth = 800;
+        // nHeight = 600;
+        nXWindow = WindowManager::defaultWindowRect.X;
+        nYWindow = WindowManager::defaultWindowRect.Y;
+        nWidth = WindowManager::defaultWindowRect.Width;
+        nHeight = WindowManager::defaultWindowRect.Height;
         WindowHelper::SetActualWindowPos(hWndMain, HWND_TOPMOST, nXWindow, nYWindow, nWidth, nHeight, 0);
         UpdateSharedItem();
         // WindowHelper::OpenMessageWindow(
@@ -281,7 +285,7 @@ namespace winrt::OCR::implementation
             /*const auto item = Windows::Graphics::Capture::GraphicsCaptureItem::TryCreateFromWindowId({
                 Microsoft::UI::GetWindowIdFromWindow(hWndMain).Value
             });*/
-#pragma endregion
+
             // co_await CaptureHelper::CaptureCurrentWindowAsync();
             /*Windows::Storage::Pickers::FileOpenPicker picker;
             picker.ViewMode(Windows::Storage::Pickers::PickerViewMode::Thumbnail);
@@ -293,7 +297,8 @@ namespace winrt::OCR::implementation
             auto item{
                 picker.PickSingleItemAsync()
             };*/
-            mainCanvas().Children().Clear();
+#pragma endregion
+            CleanCanvas();
             const HWND hWnd = GetDesktopWindow();
             const HDC hdcSrc = GetDC(hWnd);
             const HDC hdcMem = CreateCompatibleDC(hdcSrc);
@@ -317,9 +322,18 @@ namespace winrt::OCR::implementation
                 time + L".bmp";
             WindowHelper::OpenMessageWindow(L"test " + to_hstring(image.GetWidth()) + L"\n" + tempPath);
             [[maybe_unused]] auto r = image.Save(tempPath.c_str());
-
-            const Windows::Media::Ocr::OcrEngine ocrEngine =
-                Windows::Media::Ocr::OcrEngine::TryCreateFromUserProfileLanguages();
+            Windows::Media::Ocr::OcrEngine ocrEngine{nullptr};
+            if (WindowManager::sourceLanguageTag.empty() || !Windows::Globalization::Language::IsWellFormed(
+                WindowManager::sourceLanguageTag))
+            {
+                ocrEngine =
+                    Windows::Media::Ocr::OcrEngine::TryCreateFromUserProfileLanguages();
+            }
+            else
+            {
+                ocrEngine = Windows::Media::Ocr::OcrEngine::TryCreateFromLanguage(
+                    Windows::Globalization::Language(WindowManager::sourceLanguageTag));
+            }
             const auto buffer = CaptureHelper::CreateBufferFromHBitmap(hdcSrc, hBitmap);
             SelectObject(hdcMem, hOldbmp);
             DeleteObject(hdcMem);
@@ -335,32 +349,53 @@ namespace winrt::OCR::implementation
             const auto ocrResult = co_await ocrEngine.RecognizeAsync(bitmap);
             const auto lines = ocrResult.Lines();
             hstring results;
+            hstring texts;
             for (auto line : lines)
             {
+                auto xStart = WindowManager::monitorWidth;
+                auto yStart = WindowManager::monitorHeight;
+                auto xEnd = 0.0;
+                auto yEnd = 0.0;
                 for (auto words = line.Words(); auto word : words)
                 {
                     auto text = word.Text();
+                    texts = texts + text;
                     const auto rect = word.BoundingRect();
                     results = results + text + L" " + to_hstring(rect.X) + L" " + to_hstring(rect.Y) + L" " +
                         to_hstring(rect.Width) + L" " + to_hstring(rect.Height) + L"\n";
-                    auto rectangle = Shapes::Rectangle();
-                    rectangle.Width(rect.Width);
-                    rectangle.Height(rect.Height);
-                    rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
-                    rectangle.StrokeThickness(0.7);
-                    mainCanvas().SetLeft(rectangle, rect.X);
-                    mainCanvas().SetTop(rectangle, rect.Y);
-                    mainCanvas().Children().Append(rectangle);
+                    xStart = min(xStart, rect.X);
+                    yStart = min(yStart, rect.Y);
+                    xEnd = max(xEnd, rect.X + rect.Width);
+                    yEnd = max(yEnd, rect.Y + rect.Height);
+                    // auto rectangle = Shapes::Rectangle();
+                    // rectangle.Width(rect.Width);
+                    // rectangle.Height(rect.Height);
+                    // rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
+                    // rectangle.StrokeThickness(0.7);
+                    // mainCanvas().SetLeft(rectangle, rect.X);
+                    // mainCanvas().SetTop(rectangle, rect.Y);
+                    // mainCanvas().Children().Append(rectangle);
                     auto textBlock = Controls::TextBlock();
                     textBlock.Text(text);
-                    textBlock.FontSize(rect.Height * 0.8);
+                    textBlock.FontSize(rect.Height);
                     textBlock.Width(rect.Width);
-                    textBlock.Height(rect.Height);
+                    textBlock.Height(rect.Height * 1.25);
+                    textBlock.ProtectedCursor(ArrowCursor);
                     mainCanvas().SetLeft(textBlock, rect.X);
                     mainCanvas().SetTop(textBlock, rect.Y);
                     mainCanvas().Children().Append(textBlock);
                 }
+                auto rectangle = Shapes::Rectangle();
+                rectangle.Width(xEnd - xStart);
+                rectangle.Height((yEnd - yStart) * 1.25);
+                rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
+                rectangle.StrokeThickness(0.7);
+                rectangle.ProtectedCursor(ArrowCursor);
+                mainCanvas().SetLeft(rectangle, xStart);
+                mainCanvas().SetTop(rectangle, yStart);
+                mainCanvas().Children().Append(rectangle);
             }
+            WindowManager::rawText = texts;
             WindowHelper::OpenMessageWindow(results);
         }
     }
@@ -532,6 +567,11 @@ namespace winrt::OCR::implementation
     void OverlayPanel::MainBorderMargin(double value)
     {
         mainBorderMargin = value;
+    }
+
+    void OverlayPanel::CleanCanvas()
+    {
+        mainCanvas().Children().Clear();
     }
 
     void OverlayPanel::UpdateSharedItem()
