@@ -27,7 +27,7 @@ namespace winrt::OCR::implementation
 
     ConfigPage::ConfigPage(const Window& window)
     {
-        this->window = window;
+        this->outerWindow = window;
         m_sharedItem = SharedItem::Instance();
         InitializeComponent();
         InitializeLanguageSettings();
@@ -52,7 +52,7 @@ namespace winrt::OCR::implementation
     Windows::Foundation::IAsyncAction ConfigPage::pyHomeButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
         const auto picker = Windows::Storage::Pickers::FolderPicker();
-        const HWND hWnd = WindowHelper::GetWindowHandle(window);
+        const HWND hWnd = WindowHelper::GetWindowHandle(outerWindow);
         picker.as<IInitializeWithWindow>()->Initialize(hWnd);
         const auto folder = co_await picker.PickSingleFolderAsync();
         const auto path = folder.Path();
@@ -64,7 +64,7 @@ namespace winrt::OCR::implementation
         Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
         const auto picker = Windows::Storage::Pickers::FolderPicker();
-        const HWND hWnd = WindowHelper::GetWindowHandle(window);
+        const HWND hWnd = WindowHelper::GetWindowHandle(outerWindow);
         picker.as<IInitializeWithWindow>()->Initialize(hWnd);
         const auto folder = co_await picker.PickSingleFolderAsync();
         m_sharedItem.SitePackages(folder.Path());
@@ -92,13 +92,13 @@ namespace winrt::OCR::implementation
 
     void ConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)
     {
-        auto window = e.Parameter().try_as<Window>();
-        this->window = window;
+        const auto window = e.Parameter().try_as<Window>();
+        this->outerWindow = window;
     }
 
     void ConfigPage::InitializeLanguageSettings()
     {
-        auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
+        const auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
         hstring text = L"";
         OCR::implementation::LanguageItem::RegisterDependencyProperty();
         for (auto supported_language : supportedLanguages)

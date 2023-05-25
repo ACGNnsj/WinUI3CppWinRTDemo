@@ -11,7 +11,7 @@ namespace winrt::OCR::implementation
     {
         ConfigPage();
         ConfigPage(const Microsoft::UI::Xaml::Window& window);
-        Microsoft::UI::Xaml::Window window{nullptr};
+        Microsoft::UI::Xaml::Window outerWindow{nullptr};
         int32_t MyProperty();
         void MyProperty(int32_t value);
         OCR::SharedItem SharedItem();

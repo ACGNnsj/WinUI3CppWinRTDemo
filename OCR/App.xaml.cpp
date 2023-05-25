@@ -51,11 +51,11 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     window.Content(overlayPanel);
     window.Activate();
 
-    HWND hWnd = WindowHelper::GetWindowHandle(window);
+    const HWND hWnd = WindowHelper::GetWindowHandle(window);
 
     WindowManager::mainWindowHandle = hWnd;
     // WindowManager::overlayPanel = overlayPanel;
-    Window* windowPtr = (Window*)&WindowManager::mainWindow;
+    const auto windowPtr = (Window*)&WindowManager::mainWindow;
     *windowPtr = window;
 
     WindowHelper::GetDesktopResolution(WindowManager::monitorWidth, WindowManager::monitorHeight);
@@ -102,7 +102,7 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                     // WindowHelper::OpenMessageWindow(L"WM_SHOWCONFIG");
                     POINT pt;
                     GetCursorPos(&pt);
-                    HMENU hMenu = CreatePopupMenu();
+                    const HMENU hMenu = CreatePopupMenu();
                     AppendMenu(hMenu, MF_STRING, 1, L"Configure");
                     AppendMenu(hMenu, MF_STRING, 2, L"Exit");
                     SetForegroundWindow(hWnd);

@@ -151,8 +151,7 @@ namespace winrt::OCR::implementation
     {
         if (WindowManager::mainWindow)
         {
-            auto panel = WindowManager::mainWindow.Content().try_as<OCR::OverlayPanel>();
-            if (panel)
+            if (const auto panel = WindowManager::mainWindow.Content().try_as<OCR::OverlayPanel>())
             {
                 panel.CleanCanvas();
             }
