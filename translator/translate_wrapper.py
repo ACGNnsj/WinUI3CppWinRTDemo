@@ -21,7 +21,7 @@ def translate(from_code: str, to_code: str, raw_text: str):
                 )
             )
         except StopIteration:
-            return "Language combination not supported"
+            return f"Language combination not supported\nfrom_code: {from_code} to_code: {to_code} raw_text: {raw_text}"
         argostranslate.package.install_from_path(package_to_install.download())
         translated_text = argostranslate.translate.translate(raw_text, from_code, to_code)
     # print(translated_text)

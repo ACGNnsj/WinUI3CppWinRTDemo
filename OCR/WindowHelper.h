@@ -7,7 +7,7 @@ namespace winrt::OCR
     public:
         static HWND GetWindowHandle(const Microsoft::UI::Xaml::Window& window);
         static Microsoft::UI::Windowing::AppWindow GetAppWindow(HWND handle);
-        static Microsoft::UI::Xaml::Window GetWindow(HWND handle);
+        // static Microsoft::UI::Xaml::Window GetWindow(HWND handle);
         static RECT GetSystemMargin(HWND handle);
         static void SetActualWindowPos(HWND handle, HWND hWndInsertAfter, int x, int y, int width, int height,
                                        UINT uFlags);

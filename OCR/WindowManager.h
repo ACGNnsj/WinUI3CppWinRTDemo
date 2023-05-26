@@ -7,7 +7,7 @@ namespace winrt::OCR
     {
     public:
         inline static HWND mainWindowHandle{nullptr};
-        inline static Windows::Graphics::RectInt32 defaultWindowRect{100, 100, 800, 600};
+        inline static constexpr Windows::Graphics::RectInt32 defaultWindowRect{100, 100, 800, 600};
         inline static hstring rawText;
         inline static double monitorWidth;
         inline static double monitorHeight;

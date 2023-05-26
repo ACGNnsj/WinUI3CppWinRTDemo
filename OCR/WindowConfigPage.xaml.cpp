@@ -147,7 +147,7 @@ namespace winrt::OCR::implementation
         RegisterHotKey(WindowManager::mainWindowHandle, 1, WindowManager::modifierMask, WindowManager::hotkey);
     }
 
-    void WindowConfigPage::CleanWindow(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& e)
+    void WindowConfigPage::CleanWindow(const IInspectable&, const RoutedEventArgs&)
     {
         if (WindowManager::mainWindow)
         {

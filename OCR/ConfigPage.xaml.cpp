@@ -77,7 +77,7 @@ namespace winrt::OCR::implementation
         localSettings.Values().Insert(L"sitePackages", box_value(m_sharedItem.SitePackages()));
     }
 
-    void ConfigPage::applyButton_Click(Windows::Foundation::IInspectable const& sender, RoutedEventArgs const& args)
+    void ConfigPage::applyButton_Click(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
         const auto selectedSourceLanguage = unbox_value_or(sourceComboBox().SelectedValue(), L"");
         /*auto selectedSourceLanguageItem = unbox_value_or<OCR::LanguageItem>(sourceComboBox().SelectedItem(), nullptr);

@@ -18,13 +18,13 @@ namespace winrt::OCR
         return Microsoft::UI::Windowing::AppWindow::GetFromWindowId(windowId);
     }
 
-    Microsoft::UI::Xaml::Window WindowHelper::GetWindow(HWND handle)
+    /*Microsoft::UI::Xaml::Window WindowHelper::GetWindow(HWND handle)
     {
         // Microsoft::UI::Windowing::AppWindow appWindow = GetAppWindow(handle);
         /*Windows::UI::WindowManagement::AppWindow appWindow= Windows::UI::WindowManagement::AppWindow::GetFromWindowHandle(handle);
-        Windows::UI::Xaml::Hosting::ElementCompositionPreview::GetAppWindowContent(appWindow);*/
+        Windows::UI::Xaml::Hosting::ElementCompositionPreview::GetAppWindowContent(appWindow);#1#
         return nullptr;
-    }
+    }*/
 
     RECT WindowHelper::GetSystemMargin(const HWND handle)
     {
@@ -95,7 +95,7 @@ namespace winrt::OCR
     template void WindowHelper::GetDesktopResolution(double& horizontal, double& vertical);
 
     void WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
-                                         const Microsoft::UI::Xaml::Window& window)
+                                         [[maybe_unused]] const Microsoft::UI::Xaml::Window& window)
     {
         /*if (window)
         {

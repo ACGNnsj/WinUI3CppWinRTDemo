@@ -77,7 +77,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 
     const hstring currentDirectory = StringHelper::GetCurrentDirectory() + L"Assets\\Square44x44Logo.scale-200.png";
     Gdiplus::Bitmap bitmap(currentDirectory.c_str());
-    WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory, L"directory", window);
+    // WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory, L"directory", window);
 
     bitmap.GetHICON(&hIcon);
     nid.hIcon = hIcon;
@@ -148,6 +148,7 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
         }
     case WM_CLOSE:
         {
+            Py_Finalize();
             // WindowHelper::OpenMessageWindow(L"WM_CLOSE");
             PostMessage(hWnd, WM_QUIT, 0, 0);
             break;
@@ -158,10 +159,15 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
             {
             case 1:
                 {
-                    WindowHelper::OpenMessageWindow(L"WM_HOTKEY 1");
+                     const auto translatedText
+                         = TranslateHelper::Translate(to_string(WindowManager::rawText).c_str(),
+                                                      to_string(WindowManager::sourceLanguageTag).substr(0, 2).c_str(),
+                                                      to_string(WindowManager::targetLanguageTag).substr(0, 2).c_str());
+                     WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
+					 //TranslateHelper::TranslateAsync(WindowManager::rawText, WindowManager::sourceLanguageTag, WindowManager::targetLanguageTag);
                     break;
                 }
-            default: WindowHelper::OpenMessageWindow(hstring(L"wParam=") + wParam + L" lParam=" + lParam);
+            default: /* WindowHelper::OpenMessageWindow(hstring(L"wParam=") + wParam + L" lParam=" + lParam)*/;
             }
             break;
         }

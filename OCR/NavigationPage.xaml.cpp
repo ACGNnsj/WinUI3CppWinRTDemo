@@ -28,7 +28,7 @@ namespace winrt::OCR::implementation
 
 
     void NavigationPage::ContentFrame_NavigationFailed(Windows::Foundation::IInspectable const&,
-                                                       Navigation::NavigationFailedEventArgs const& args)
+                                                       Navigation::NavigationFailedEventArgs const&)
     {
     }
 
