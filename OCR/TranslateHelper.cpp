@@ -56,7 +56,7 @@ namespace winrt::OCR
         {
             return L"pResult is nullptr\ntext: " + to_hstring(text);
         }
-        WindowHelper::OpenMessageWindow(L"from: " + to_hstring(from) + L" to: " + to_hstring(to));
+        // WindowHelper::OpenMessageWindow(L"from: " + to_hstring(from) + L" to: " + to_hstring(to));
         const auto pout = PyUnicode_AsWideCharString(pResult, nullptr);
         ++count;
         return pout;
