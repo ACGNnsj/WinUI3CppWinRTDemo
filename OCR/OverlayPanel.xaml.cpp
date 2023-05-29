@@ -61,8 +61,7 @@ namespace winrt::OCR::implementation
             Gdiplus::DllExports::GdipCreateHBITMAPFromBitmap(pImage, &m_hBitmap, RGB(0, 0, 0));
             Gdiplus::DllExports::GdipDisposeImage(pImage);
         }
-        HRESULT result = CreateD2D1Factory();
-        if (result == S_OK)
+        if (HRESULT result = CreateD2D1Factory(); result == S_OK)
         {
             CreateDeviceContext();
             result = CreateSwapChain(nullptr);
@@ -151,7 +150,7 @@ namespace winrt::OCR::implementation
         return result;
     }
 
-    HRESULT OverlayPanel::CreateSwapChain(HWND hWnd)
+    HRESULT OverlayPanel::CreateSwapChain(const HWND hWnd)
     {
         const DXGI_SWAP_CHAIN_DESC1 swapChainDesc{
             1, 1, DXGI_FORMAT_B8G8R8A8_UNORM, false, {1, 0},DXGI_USAGE_RENDER_TARGET_OUTPUT, 2,
@@ -192,8 +191,7 @@ namespace winrt::OCR::implementation
         if (cursorPosition == CursorPosition::Undefined) return;
         const Microsoft::UI::Input::PointerPoint pp = e.GetCurrentPoint(
             sender.try_as<UIElement>());
-        const auto properties = pp.Properties();
-        if (properties.IsLeftButtonPressed())
+        if (const auto properties = pp.Properties(); properties.IsLeftButtonPressed())
         {
             POINT pt;
             GetCursorPos(&pt);

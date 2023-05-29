@@ -4,7 +4,7 @@
 #include "pch.h"
 
 #include "App.xaml.h"
-#include "MainWindow.xaml.h"
+// #include "MainWindow.xaml.h"
 // #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 
 using namespace winrt;
@@ -45,7 +45,7 @@ App::App()
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
     // window = make<MainWindow>();
-    window = Window();
+    window = ::Window();
     // auto overlayPanel = OverlayPanel(window);
     auto overlayPanel = make<OverlayPanel>(window);
     window.Content(overlayPanel);
@@ -55,7 +55,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 
     WindowManager::mainWindowHandle = hWnd;
     // WindowManager::overlayPanel = overlayPanel;
-    const auto windowPtr = (Window*)&WindowManager::mainWindow;
+    const auto windowPtr = (::Window*)&WindowManager::mainWindow;
     *windowPtr = window;
 
     WindowHelper::GetDesktopResolution(WindowManager::monitorWidth, WindowManager::monitorHeight);
@@ -69,7 +69,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     // {06936F19-FC12-4DA1-96ED-FADB06E31FA3}
     nid.guidItem = {0x6936f19, 0xfc12, 0x4da1, {0x96, 0xed, 0xfa, 0xdb, 0x6, 0xe3, 0x1f, 0xa3}};
     nid.hWnd = hWnd;
-    StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test application");
+    [[maybe_unused]] HRESULT hr = StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test application");
     nid.uCallbackMessage = WM_SHOWCONFIG;
     nid.uFlags = NIF_GUID | NIF_TIP | NIF_ICON | NIF_MESSAGE | NIF_SHOWTIP;
     nid.uVersion = NOTIFYICON_VERSION_4;
@@ -77,7 +77,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 
     const hstring currentDirectory = StringHelper::GetCurrentDirectory() + L"Assets\\Square44x44Logo.scale-200.png";
     Gdiplus::Bitmap bitmap(currentDirectory.c_str());
-    // WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory, L"directory", window);
+    WindowHelper::OpenMessageWindow(L"current path: " + currentDirectory, L"directory", window);
 
     bitmap.GetHICON(&hIcon);
     nid.hIcon = hIcon;
@@ -89,7 +89,13 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     //         static_cast<int32_t>(winrt::xaml_typename<OCR::ConfigPage>().Kind)));
 }
 
-LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR)
+Window App::Window()
+{
+    return window;
+}
+
+LRESULT implementation::SubclassProc(const HWND hWnd, const UINT uMsg, const WPARAM wParam, const LPARAM lParam,
+                                     UINT_PTR, DWORD_PTR)
 {
     switch (uMsg)
     {
@@ -159,12 +165,34 @@ LRESULT implementation::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
             {
             case 1:
                 {
-                     const auto translatedText
-                         = TranslateHelper::Translate(to_string(WindowManager::rawText).c_str(),
-                                                      to_string(WindowManager::sourceLanguageTag).substr(0, 2).c_str(),
-                                                      to_string(WindowManager::targetLanguageTag).substr(0, 2).c_str());
-                     WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
-					 //TranslateHelper::TranslateAsync(WindowManager::rawText, WindowManager::sourceLanguageTag, WindowManager::targetLanguageTag);
+                    if (static auto count = 0; count == 0)
+                    {
+                        WindowHelper::OpenMessageWindow(L"Initializing Python Interpreter and Modules", L"Processing");
+                        ++count;
+                        TranslateHelper::CreateThread();
+                    }
+                    // TranslateHelper::TranslateAsync(WindowManager::rawText, WindowManager::sourceLanguageTag,
+                    //                                    WindowManager::targetLanguageTag);
+                    if (!WindowManager::isThreadRunning)
+                    {
+                        WindowManager::hasTaskToRun = true;
+                        // TranslateHelper::TranslateInNewThread();
+                    }
+                    else
+                    {
+                        WindowHelper::OpenMessageWindow(L"Thread is running", L"Error");
+                    }
+                    /*else
+                    {
+                        const auto translatedText
+                            = TranslateHelper::Translate(to_string(WindowManager::rawText).c_str(),
+                                                         to_string(WindowManager::sourceLanguageTag).substr(0, 2).
+                                                         c_str(),
+                                                         to_string(WindowManager::targetLanguageTag).substr(0, 2).
+                                                         c_str());
+                        WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
+                    }
+                    ++count;*/
                     break;
                 }
             default: /* WindowHelper::OpenMessageWindow(hstring(L"wParam=") + wParam + L" lParam=" + lParam)*/;

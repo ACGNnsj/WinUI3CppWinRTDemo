@@ -1,5 +1,10 @@
 #include "pch.h"
-#include <winrt/Windows.UI.Xaml.Hosting.h>
+
+#include "App.xaml.h"
+// #include <winrt/Windows.UI.Xaml.Hosting.h>
+// #include <winrt/Windows.UI.Core.h>
+// #include <winrt/Windows.System.h>
+// #include <winrt/Microsoft.System.h>
 
 namespace winrt::OCR
 {
@@ -8,7 +13,7 @@ namespace winrt::OCR
         const auto windowNative{window.try_as<IWindowNative>()};
         check_bool(windowNative);
         HWND hWnd{nullptr};
-        windowNative->get_WindowHandle(&hWnd);
+        [[maybe_unused]] HRESULT hr = windowNative->get_WindowHandle(&hWnd);
         return hWnd;
     }
 
@@ -64,7 +69,7 @@ namespace winrt::OCR
     {
         constexpr DWORD dwAttribute = DWMWA_WINDOW_CORNER_PREFERENCE;
         constexpr DWM_WINDOW_CORNER_PREFERENCE pvAttribute = DWMWCP_DONOTROUND;
-        DwmSetWindowAttribute(handle, dwAttribute, &pvAttribute, sizeof(dwAttribute));
+        [[maybe_unused]] auto hr = DwmSetWindowAttribute(handle, dwAttribute, &pvAttribute, sizeof(dwAttribute));
     }
 
     /*void WindowHelper::GetDesktopResolution(auto& horizontal, auto& vertical)
@@ -94,29 +99,32 @@ namespace winrt::OCR
     template void WindowHelper::GetDesktopResolution(int& horizontal, int& vertical);
     template void WindowHelper::GetDesktopResolution(double& horizontal, double& vertical);
 
-    void WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
-                                         [[maybe_unused]] const Microsoft::UI::Xaml::Window& window)
+    Windows::Foundation::IAsyncAction WindowHelper::OpenMessageWindow(const hstring& message, const hstring& title,
+                                                                      [[maybe_unused]] const Microsoft::UI::Xaml::Window
+                                                                      & window)
     {
-        /*if (window)
+        if (window)
         {
+            [[maybe_unused]] auto r = wil::resume_foreground( implementation::App::Window().DispatcherQueue());
             const Microsoft::UI::Xaml::Controls::ContentDialog msg{};
-            msg.XamlRoot(window.Content().XamlRoot());
             msg.Title(box_value(title));
             msg.Content(box_value(message));
             msg.PrimaryButtonText(L"OK");
             msg.CloseButtonText(L"Cancel");
-            msg.as<IInitializeWithWindow>()->Initialize(GetWindowHandle(window));
-            auto result = msg.ShowAsync();
-            return;
-        }*/
+            msg.XamlRoot(window.Content().XamlRoot());
+            [[maybe_unused]] auto hr = msg.as<IInitializeWithWindow>()->Initialize(
+                GetWindowHandle(implementation::App::Window()));
+            [[maybe_unused]] auto result = co_await msg.ShowAsync();
+            co_return;
+        }
         if (const auto hWnd = WindowManager::mainWindowHandle; hWnd)
         {
             const Windows::UI::Popups::MessageDialog msg{message, title};
             msg.DefaultCommandIndex(0);
             msg.CancelCommandIndex(1);
-            msg.as<IInitializeWithWindow>()->Initialize(hWnd);
+            [[maybe_unused]] auto hr = msg.as<IInitializeWithWindow>()->Initialize(hWnd);
             auto command = msg.ShowAsync();
-            return;
+            co_return;
         }
         const auto msgWindow = Microsoft::UI::Xaml::Window();
         const auto textBlock = Microsoft::UI::Xaml::Controls::TextBlock();

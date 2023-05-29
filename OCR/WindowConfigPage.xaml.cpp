@@ -88,11 +88,10 @@ namespace winrt::OCR::implementation
         [[maybe_unused]] auto result = e.Handled();
         const auto key = e.Key();
         hstring text = L"";
-        static auto resetKeys = {
+        if (static auto resetKeys = {
             Windows::System::VirtualKey::Delete, Windows::System::VirtualKey::Back,
             Windows::System::VirtualKey::Escape, Windows::System::VirtualKey::None
-        };
-        if (std::ranges::find(resetKeys, key) != resetKeys.end())
+        }; std::ranges::find(resetKeys, key) != resetKeys.end())
         {
             hotKeyTextBox().Text(text);
             return;
@@ -109,11 +108,10 @@ namespace winrt::OCR::implementation
         static auto rightAlt = Windows::System::VirtualKey::RightMenu;
         static auto leftWin = Windows::System::VirtualKey::LeftWindows;
         static auto rightWin = Windows::System::VirtualKey::RightWindows;
-        static auto completeModifiers = {
+        if (static auto completeModifiers = {
             leftControl, rightControl, leftShift, rightShift, leftAlt, rightAlt, leftWin, rightWin, control, shift, alt,
             win
-        };
-        if (std::ranges::find(completeModifiers, key) != completeModifiers.end())
+        }; std::ranges::find(completeModifiers, key) != completeModifiers.end())
         {
             hotKeyTextBox().Text(text);
             return;

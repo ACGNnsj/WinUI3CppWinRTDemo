@@ -100,7 +100,7 @@ namespace winrt::OCR::implementation
     {
         const auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
         hstring text = L"";
-        OCR::implementation::LanguageItem::RegisterDependencyProperty();
+        LanguageItem::RegisterDependencyProperty();
         for (auto supported_language : supportedLanguages)
         {
             auto languageTag = supported_language.LanguageTag();

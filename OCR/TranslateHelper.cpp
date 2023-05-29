@@ -26,23 +26,24 @@ namespace winrt::OCR
                 "D:\\visualstudio\\OCRTranslator\\translator\\.venv\\lib\\site-packages;");*/
             Py_Initialize();
         }
-        static PyObject* pName = PyUnicode_FromWideChar(L"translate_wrapper", -1);
+        const PyGILState_STATE gstate = PyGILState_Ensure();
+        PyObject* pName = PyUnicode_FromWideChar(L"translate_wrapper", -1);
         if (pName == nullptr)
         {
             return L"pName is nullptr";
         }
-        static PyObject* pModule = PyImport_Import(pName);
+        PyObject* pModule = PyImport_Import(pName);
         if (pModule == nullptr)
         {
             // WindowHelper::OpenMessageWindow(L"pModule is nullptr" /*+ to_hstring(sysPath.c_str())*/);
             return L"pModule is nullptr";
         }
-        static PyObject* pDict = PyModule_GetDict(pModule);
+        PyObject* pDict = PyModule_GetDict(pModule);
         if (pDict == nullptr)
         {
             return L"pDict is nullptr";
         }
-        static PyObject* pFunc = PyDict_GetItemString(pDict, "translate");
+        PyObject* pFunc = PyDict_GetItemString(pDict, "translate");
         if (pFunc == nullptr)
         {
             return L"pFunc is nullptr";
@@ -52,21 +53,75 @@ namespace winrt::OCR
                                                          PyUnicode_FromWideChar(L"en", -1),
                                                          PyUnicode_FromWideChar(L"おはようございます", -1));*/
         PyObject* pResult = PyObject_CallFunction(pFunc, "sss", from, to, text);
-        if (pResult == nullptr)
+        if (nullptr == pResult)
         {
             return L"pResult is nullptr\ntext: " + to_hstring(text);
         }
         // WindowHelper::OpenMessageWindow(L"from: " + to_hstring(from) + L" to: " + to_hstring(to));
         const auto pout = PyUnicode_AsWideCharString(pResult, nullptr);
+        PyGILState_Release(gstate);
         ++count;
         return pout;
     }
 
     Windows::Foundation::IAsyncAction TranslateHelper::TranslateAsync(hstring text, hstring from, hstring to)
     {
-        co_await winrt::resume_background();
+        auto static count = 0;
+        if (count == 0)
+        {
+            co_await resume_background();
+        }
+        static apartment_context worker_thread;
+        if (count > 0)
+        {
+            co_await worker_thread;
+        }
         const auto translatedText = Translate(to_string(text).c_str(), to_string(from).substr(0, 2).c_str(),
                                               to_string(to).substr(0, 2).c_str());
+        ++count;
         WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
+    }
+
+    void TranslateHelper::TranslateInNewThread()
+    {
+        auto t = std::jthread([]
+        {
+            WindowManager::isThreadRunning = true;
+            const auto translatedText = Translate(to_string(WindowManager::rawText).c_str(),
+                                                  to_string(WindowManager::sourceLanguageTag).substr(0, 2).
+                                                  c_str(),
+                                                  to_string(WindowManager::targetLanguageTag).substr(0, 2).
+                                                  c_str());
+            WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
+            WindowManager::isThreadRunning = false;
+        });
+        t.detach();
+    }
+
+    void TranslateHelper::CreateThread()
+    {
+        auto t = std::jthread([]
+        {
+            while (true)
+            {
+                if (WindowManager::hasTaskToRun)
+                {
+                    WindowManager::isThreadRunning = true;
+                    const auto translatedText = Translate(to_string(WindowManager::rawText).c_str(),
+                                                          to_string(WindowManager::sourceLanguageTag).substr(0, 2).
+                                                          c_str(),
+                                                          to_string(WindowManager::targetLanguageTag).substr(0, 2).
+                                                          c_str());
+                    WindowHelper::OpenMessageWindow(WindowManager::rawText + L"\n\n" + translatedText, L"Result");
+                    WindowManager::isThreadRunning = false;
+                    WindowManager::hasTaskToRun = false;
+                }
+                else
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                }
+            }
+        });
+        t.detach();
     }
 }

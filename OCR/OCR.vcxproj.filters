@@ -4,13 +4,6 @@
     <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml" />
-    <Page Include="OCROverlay.xaml" />
-    <Page Include="MicaPage.xaml" />
-    <Page Include="BlankWindow.xaml" />
-    <Page Include="OverlayWindow.xaml" />
-    <Page Include="NewOverlay.xaml" />
-    <Page Include="FormalOverlay.xaml" />
     <Page Include="OverlayPanel.xaml" />
     <Page Include="ConfigPage.xaml" />
     <Page Include="NavigationPage.xaml" />
@@ -18,7 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
-    <Midl Include="MainWindow.idl" />
     <Midl Include="DoubleToThicknessConverter.idl" />
     <Midl Include="SharedItem.idl" />
     <Midl Include="StringFormatter.idl" />

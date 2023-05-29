@@ -16,6 +16,8 @@ namespace winrt::OCR
         inline static hstring sourceLanguageTag = L"";
         inline static hstring targetLanguageTag = L"";
         inline static const Windows::UI::Xaml::Window& mainWindow = nullptr;
+        inline static bool isThreadRunning = false;
+        inline static bool hasTaskToRun = false;
         // inline static const OCR::OverlayPanel& overlayPanel = nullptr;
         // static implementation::OverlayPanel createOverlayPanel(Microsoft::UI::Xaml::Window window);
     };

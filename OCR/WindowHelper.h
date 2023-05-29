@@ -14,7 +14,7 @@ namespace winrt::OCR
         static void DisableRoundedCorner(HWND handle);
         template <typename T>
         static void GetDesktopResolution(T& horizontal, T& vertical);
-        static void OpenMessageWindow(const hstring& message, const hstring& title = L"message",
+        static Windows::Foundation::IAsyncAction OpenMessageWindow(const hstring& message, const hstring& title = L"message",
                                       const Microsoft::UI::Xaml::Window& window = nullptr);
     };
 
