@@ -143,22 +143,33 @@ LRESULT implementation::SubclassProc(const HWND hWnd, const UINT uMsg, const WPA
                     nid.hWnd = hWnd;
                     Shell_NotifyIcon(NIM_DELETE, &nid);*/
                     // PostQuitMessage(0);
-                    PostMessage(hWnd, WM_CLOSE, 0, 0);
+                    // PostMessage(hWnd, WM_CLOSE, 0, 0);
                     // PostMessage(hWnd, WM_QUIT, 0, 0);
                     // Application::Current().Exit();
+                    // ExitProcess(0);
+                    // exit(0);
+                    // TerminateProcess(GetCurrentProcess(), 0);
+                    if (WindowManager::threadCreated)
+                    {
+                        WindowManager::keepAlive = false;
+                    }
+                    else
+                    {
+                        ExitProcess(0);
+                    }
                     break;
                 }
             default: ;
             }
             break;
         }
-    case WM_CLOSE:
+    /*case WM_CLOSE:
         {
-            Py_Finalize();
+            // Py_Finalize();
             // WindowHelper::OpenMessageWindow(L"WM_CLOSE");
             PostMessage(hWnd, WM_QUIT, 0, 0);
             break;
-        }
+        }*/
     case WM_HOTKEY:
         {
             switch (wParam)

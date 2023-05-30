@@ -9,6 +9,11 @@ namespace OCR
         OverlayPanel();
         OverlayPanel(Microsoft.UI.Xaml.Window window);
         Int32 MyProperty;
+        Int32 NWidth { get; };
+        Int32 NHeight { get; };
+        Int32 NXWindow { get; };
+        Int32 NYWindow { get; };
+        Microsoft.UI.Xaml.Controls.Canvas MainCanvas { get; };
         Double MainBorderThickness;
         Double MainBorderMargin;
         void CleanCanvas();

@@ -12,10 +12,10 @@ namespace winrt::OCR::implementation
         ConfigPage();
         ConfigPage(const Microsoft::UI::Xaml::Window& window);
         Microsoft::UI::Xaml::Window outerWindow{nullptr};
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
+
         OCR::SharedItem SharedItem();
         // void SharedItem(OCR::SharedItem const& value);
+        Windows::Foundation::Collections::IObservableVector<OCR::LanguageItem> LanguageItems();
         Windows::Foundation::IAsyncAction pyHomeButton_Click(Windows::Foundation::IInspectable const& sender,
                                                              Microsoft::UI::Xaml::RoutedEventArgs const& args);
         Windows::Foundation::IAsyncAction sitePackagesButton_Click(Windows::Foundation::IInspectable const& sender,
@@ -23,10 +23,12 @@ namespace winrt::OCR::implementation
         void saveButton_Click(Windows::Foundation::IInspectable const& sender,
                               Microsoft::UI::Xaml::RoutedEventArgs const& args);
         void applyButton_Click(Windows::Foundation::IInspectable const& sender,
-                              Microsoft::UI::Xaml::RoutedEventArgs const& args);
+                               Microsoft::UI::Xaml::RoutedEventArgs const& args);
         void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
+
     private:
         OCR::SharedItem m_sharedItem{nullptr};
+        Windows::Foundation::Collections::IObservableVector<OCR::LanguageItem> m_languageItems;
         void InitializeLanguageSettings();
     };
 }

@@ -66,6 +66,112 @@ namespace winrt::OCR
         });
     }
 
+    Windows::Foundation::IAsyncAction CaptureHelper::CaptureAndRecognizeAsync(Microsoft::UI::Xaml::Window window)
+    {
+        auto panel = window.Content().try_as<OCR::OverlayPanel>();
+        Windows::Media::Ocr::OcrEngine ocrEngine{nullptr};
+        if (WindowManager::sourceLanguageTag.empty() || !Windows::Globalization::Language::IsWellFormed(
+            WindowManager::sourceLanguageTag))
+        {
+            ocrEngine =
+                Windows::Media::Ocr::OcrEngine::TryCreateFromUserProfileLanguages();
+        }
+        else
+        {
+            ocrEngine = Windows::Media::Ocr::OcrEngine::TryCreateFromLanguage(
+                Windows::Globalization::Language(WindowManager::sourceLanguageTag));
+        }
+        const HWND hWnd = GetDesktopWindow();
+        const HDC hdcSrc = GetDC(hWnd);
+        const HDC hdcMem = CreateCompatibleDC(hdcSrc);
+        const int outerWidth = static_cast<int>(panel.MainBorderThickness() * 3);
+        const HBITMAP hBitmap = CreateCompatibleBitmap(hdcSrc, panel.NWidth() - outerWidth * 2,
+                                                       panel.NHeight() - outerWidth * 2);
+        const HGDIOBJ hOldbmp = SelectObject(hdcMem, hBitmap);
+        BitBlt(hdcMem, 0, 0, panel.NWidth() - outerWidth * 2, panel.NHeight() - outerWidth * 2, hdcSrc,
+               panel.NXWindow() + outerWidth,
+               panel.NYWindow() + outerWidth, SRCCOPY);
+        CImage image;
+        image.Attach(hBitmap);
+        /*// auto* date = new wchar_t[256];
+        wchar_t date[256];
+        // const auto time = new wchar_t[80];
+        wchar_t time[80];
+        SYSTEMTIME st;
+        // [[maybe_unused]] auto ret = setlocale(LC_ALL, "zh-CN");
+        GetLocalTime(&st);
+        GetDateFormatEx(L"zh-CN", DATE_LONGDATE, &st, nullptr, date, _countof(date), nullptr);
+        GetTimeFormatEx(L"zh-CN", TIME_FORCE24HOURFORMAT, &st, L"HH'-'mm'-'ss", time, _countof(time));
+        const auto tempPath = Windows::Storage::ApplicationData::Current().TemporaryFolder().Path() + L"\\" + date +
+            time + L".bmp";
+        WindowHelper::OpenMessageWindow(L"test " + to_hstring(image.GetWidth()) + L"\n" + tempPath);
+        [[maybe_unused]] auto r = image.Save(tempPath.c_str());*/
+
+        const auto buffer = CaptureHelper::CreateBufferFromHBitmap(hdcSrc, hBitmap);
+        SelectObject(hdcMem, hOldbmp);
+        DeleteObject(hdcMem);
+        ReleaseDC(hWnd, hdcSrc);
+        const auto bitmap = Windows::Graphics::Imaging::SoftwareBitmap::CreateCopyFromBuffer(
+            buffer, Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8, image.GetWidth(),
+            image.GetHeight(), Windows::Graphics::Imaging::BitmapAlphaMode::Premultiplied);
+        /*auto img = Controls::Image();
+        const auto softwareBitmapSource = Media::Imaging::SoftwareBitmapSource();
+        co_await softwareBitmapSource.SetBitmapAsync(bitmap);
+        img.Source(softwareBitmapSource);
+        sp1().Children().Append(img);*/
+        const auto ocrResult = co_await ocrEngine.RecognizeAsync(bitmap);
+        const auto lines = ocrResult.Lines();
+        // hstring results;
+        hstring texts;
+        for (auto line : lines)
+        {
+            auto xStart = WindowManager::monitorWidth;
+            auto yStart = WindowManager::monitorHeight;
+            auto xEnd = 0.0;
+            auto yEnd = 0.0;
+            for (auto words = line.Words(); auto word : words)
+            {
+                auto text = word.Text();
+                texts = texts + text;
+                const auto rect = word.BoundingRect();
+                // results = results + text + L" " + to_hstring(rect.X) + L" " + to_hstring(rect.Y) + L" " +
+                //     to_hstring(rect.Width) + L" " + to_hstring(rect.Height) + L"\n";
+                xStart = min(xStart, rect.X);
+                yStart = min(yStart, rect.Y);
+                xEnd = max(xEnd, rect.X + rect.Width);
+                yEnd = max(yEnd, rect.Y + rect.Height);
+                // auto rectangle = Shapes::Rectangle();
+                // rectangle.Width(rect.Width);
+                // rectangle.Height(rect.Height);
+                // rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
+                // rectangle.StrokeThickness(0.7);
+                // mainCanvas().SetLeft(rectangle, rect.X);
+                // mainCanvas().SetTop(rectangle, rect.Y);
+                // mainCanvas().Children().Append(rectangle);
+                auto textBlock = Microsoft::UI::Xaml::Controls::TextBlock();
+                textBlock.Text(text);
+                textBlock.FontSize(rect.Height);
+                textBlock.Width(rect.Width);
+                textBlock.Height(rect.Height * 1.25);
+                textBlock.ProtectedCursor(ArrowCursor);
+                panel.MainCanvas().SetLeft(textBlock, rect.X);
+                panel.MainCanvas().SetTop(textBlock, rect.Y);
+                panel.MainCanvas().Children().Append(textBlock);
+            }
+            auto rectangle = Microsoft::UI::Xaml::Shapes::Rectangle();
+            rectangle.Width(xEnd - xStart);
+            rectangle.Height((yEnd - yStart) * 1.25);
+            rectangle.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush(Windows::UI::Colors::Red()));
+            rectangle.StrokeThickness(0.7);
+            rectangle.ProtectedCursor(ArrowCursor);
+            panel.MainCanvas().SetLeft(rectangle, xStart);
+            panel.MainCanvas().SetTop(rectangle, yStart);
+            panel.MainCanvas().Children().Append(rectangle);
+        }
+        WindowManager::rawText = texts;
+        // WindowHelper::OpenMessageWindow(results);
+    }
+
     Windows::Storage::Streams::IBuffer CaptureHelper::CreateBufferFromHBitmap(const HDC hdc, const HBITMAP hBitmap)
     {
         CBitmap* bitmap = CBitmap::FromHandle(hBitmap);

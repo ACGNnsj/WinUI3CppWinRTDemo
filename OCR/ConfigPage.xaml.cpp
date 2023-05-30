@@ -34,19 +34,14 @@ namespace winrt::OCR::implementation
         // this->DataContext(m_sharedItem);
     }
 
-    int32_t ConfigPage::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void ConfigPage::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
-
     OCR::SharedItem ConfigPage::SharedItem()
     {
         return m_sharedItem;
+    }
+
+    Windows::Foundation::Collections::IObservableVector<OCR::LanguageItem> ConfigPage::LanguageItems()
+    {
+        return m_languageItems;
     }
 
     Windows::Foundation::IAsyncAction ConfigPage::pyHomeButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -79,15 +74,12 @@ namespace winrt::OCR::implementation
 
     void ConfigPage::applyButton_Click(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
-        const auto selectedSourceLanguage = unbox_value_or(sourceComboBox().SelectedValue(), L"");
-        /*auto selectedSourceLanguageItem = unbox_value_or<OCR::LanguageItem>(sourceComboBox().SelectedItem(), nullptr);
-        WindowHelper::OpenMessageWindow(
-            selectedSourceLanguage + L" " + selectedSourceLanguageItem.LanguageTag() + L" " + selectedSourceLanguageItem
-            .DisplayName());*/
-        // auto selectedSourceLanguageItem = unbox_value_or(sourceComboBox().SelectedValue(), L"");
-        WindowManager::sourceLanguageTag = selectedSourceLanguage;
-        const auto selectedTargetLanguage = unbox_value_or(targetComboBox().SelectedValue(), L"");
-        WindowManager::targetLanguageTag = selectedTargetLanguage;
+        // auto selectedSourceLanguageItem = unbox_value_or<OCR::LanguageItem>(sourceComboBox().SelectedItem(), nullptr);
+        auto selectedSourceLanguageTag = unbox_value_or(sourceComboBox().SelectedValue(), L"");
+        WindowManager::sourceLanguageTag = selectedSourceLanguageTag;
+        auto selectedTargetLanguageTag = unbox_value_or(targetComboBox().SelectedValue(), L"");
+        WindowManager::targetLanguageTag = selectedTargetLanguageTag;
+        // WindowHelper::OpenMessageWindow(WindowManager::sourceLanguageTag + L" " + WindowManager::targetLanguageTag);
     }
 
     void ConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)
@@ -99,24 +91,27 @@ namespace winrt::OCR::implementation
     void ConfigPage::InitializeLanguageSettings()
     {
         const auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
-        hstring text = L"";
+        // hstring text = L"";
         LanguageItem::RegisterDependencyProperty();
+        m_languageItems = single_threaded_observable_vector<OCR::LanguageItem>();
         for (auto supported_language : supportedLanguages)
         {
             auto languageTag = supported_language.LanguageTag();
             auto displayName = supported_language.DisplayName();
-            text = text + languageTag + L" " + displayName + L"\n";
-            /*OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
+            // text = text + languageTag + L" " + displayName + L"\n";
+            OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
             item.DisplayName(displayName);
             item.LanguageTag(languageTag);
-            sourceComboBox().Items().Append(item);
-            targetComboBox().Items().Append(item);*/
-            sourceComboBox().Items().Append(box_value(languageTag));
-            targetComboBox().Items().Append(box_value(languageTag));
+            m_languageItems.Append(item);
+            // sourceComboBox().Items().Append(item);
+            // targetComboBox().Items().Append(item);
+            // sourceComboBox().Items().Append(box_value(languageTag));
+            // targetComboBox().Items().Append(box_value(languageTag));
         }
         if (!WindowManager::sourceLanguageTag.empty())
         {
-            sourceComboBox().SelectedItem(box_value(WindowManager::sourceLanguageTag));
+            // sourceComboBox().SelectedItem(box_value(WindowManager::sourceLanguageTag));
+            sourceComboBox().SelectedValue(box_value(WindowManager::sourceLanguageTag));
         }
         else
         {
@@ -124,12 +119,13 @@ namespace winrt::OCR::implementation
         }
         if (!WindowManager::targetLanguageTag.empty())
         {
-            targetComboBox().SelectedItem(box_value(WindowManager::targetLanguageTag));
+            // targetComboBox().SelectedItem(box_value(WindowManager::targetLanguageTag));
+            targetComboBox().SelectedValue(box_value(WindowManager::targetLanguageTag));
         }
         else
         {
             targetComboBox().SelectedIndex(0);
         }
-        WindowHelper::OpenMessageWindow(text);
+        // WindowHelper::OpenMessageWindow(text);
     }
 }

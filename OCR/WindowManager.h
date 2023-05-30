@@ -18,6 +18,10 @@ namespace winrt::OCR
         inline static const Windows::UI::Xaml::Window& mainWindow = nullptr;
         inline static bool isThreadRunning = false;
         inline static bool hasTaskToRun = false;
+        inline static bool keepAlive = true;
+        inline static bool threadCreated = false;
+        inline static int enqueueTime = 0;
+        inline static bool isRightClick = false;
         // inline static const OCR::OverlayPanel& overlayPanel = nullptr;
         // static implementation::OverlayPanel createOverlayPanel(Microsoft::UI::Xaml::Window window);
     };

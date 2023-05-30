@@ -85,7 +85,8 @@ namespace winrt::OCR::implementation
 
     void WindowConfigPage::hotKeyTextBox_PreviewKeyDown(const IInspectable&, const Input::KeyRoutedEventArgs& e)
     {
-        [[maybe_unused]] auto result = e.Handled();
+        // [[maybe_unused]] auto result = e.Handled();
+        e.Handled(true);
         const auto key = e.Key();
         hstring text = L"";
         if (static auto resetKeys = {

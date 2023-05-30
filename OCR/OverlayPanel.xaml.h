@@ -36,12 +36,12 @@ namespace winrt::OCR::implementation
         HRESULT CreateSwapChain(HWND hWnd);
         void Root_PointerMoved(Windows::Foundation::IInspectable const& sender,
                                Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
-        Windows::Foundation::IAsyncAction Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
+        void Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
                                  Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void Root_PointerReleased(Windows::Foundation::IInspectable const& sender,
                                   Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void border_PointerMoved(Windows::Foundation::IInspectable const& sender,
-                                 Microsoft::UI::Xaml::RoutedEventArgs const& e);
+                                 Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void panel_Loaded(Windows::Foundation::IInspectable const& sender,
                           Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void border_Loaded(Windows::Foundation::IInspectable const& sender,
@@ -50,13 +50,20 @@ namespace winrt::OCR::implementation
                                    Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void border_PointerReleased(Windows::Foundation::IInspectable const& sender,
                                     Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        
         int32_t MyProperty();
         void MyProperty(int value);
+        int NWidth();
+        int NHeight();
+        int NXWindow();
+        int NYWindow();
+        Microsoft::UI::Xaml::Controls::Canvas MainCanvas();
         double MainBorderThickness();
         void MainBorderThickness(double value);
         double MainBorderMargin();
         void MainBorderMargin(double value);
         void CleanCanvas();
+
     private:
         OCR::SharedItem m_sharedItem{nullptr};
         void UpdateSharedItem();

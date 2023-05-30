@@ -33,6 +33,6 @@
         <TextBox Grid.Row="2" Grid.ColumnSpan="2" Header="Hotkey for translation" x:Name="hotKeyTextBox" IsReadOnly="True" HorizontalAlignment="Center"
                  PreviewKeyDown="hotKeyTextBox_PreviewKeyDown" />
         <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Click="ApplyHotkey" VerticalAlignment="Center" HorizontalAlignment="Center">Apply Hotkey</Button>
-        <Button Click="CleanWindow">Clean the window</Button>
+        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Click="CleanWindow" HorizontalAlignment="Center">Clean the window</Button>
     </Grid>
 </Page>

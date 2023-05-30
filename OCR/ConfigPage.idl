@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 import "SharedItem.idl";
+import "LanguageItem.idl";
 
 namespace OCR
 {
@@ -9,7 +10,7 @@ namespace OCR
     {
         ConfigPage();
         ConfigPage(Microsoft.UI.Xaml.Window window);
-        Int32 MyProperty;
         SharedItem SharedItem { get; };
+        Windows.Foundation.Collections.IObservableVector<LanguageItem> LanguageItems { get; };
     }
 }

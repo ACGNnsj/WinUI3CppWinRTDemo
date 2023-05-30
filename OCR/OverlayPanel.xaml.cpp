@@ -7,6 +7,7 @@
 #include "OverlayPanel.g.cpp"
 #endif
 #include <windows.graphics.directx.direct3d11.interop.h>
+// #include <winrt/Windows.System.h>
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -203,13 +204,14 @@ namespace winrt::OCR::implementation
         }
     }
 
-    Windows::Foundation::IAsyncAction OverlayPanel::Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
-                                                                        Input::PointerRoutedEventArgs const& e)
+    void OverlayPanel::Root_PointerPressed(Windows::Foundation::IInspectable const& sender,
+                                           Input::PointerRoutedEventArgs const& e)
     {
         const auto sd = sender.try_as<UIElement>();
         if (const auto properties = e.GetCurrentPoint(sd).Properties(); properties.IsLeftButtonPressed())
         {
-            if (borderPressed) co_return;
+            WindowManager::isRightClick = false;
+            if (borderPressed) return;
             [[maybe_unused]] bool result = sd.CapturePointer(e.Pointer());
 #pragma region
             /*HWND hWnd = WindowFromPoint(pt);
@@ -296,105 +298,42 @@ namespace winrt::OCR::implementation
                 picker.PickSingleItemAsync()
             };*/
 #pragma endregion
-            CleanCanvas();
-            const HWND hWnd = GetDesktopWindow();
-            const HDC hdcSrc = GetDC(hWnd);
-            const HDC hdcMem = CreateCompatibleDC(hdcSrc);
-            const int outerWidth = static_cast<int>(mainBorderThickness * 3);
-            const HBITMAP hBitmap = CreateCompatibleBitmap(hdcSrc, nWidth - outerWidth * 2, nHeight - outerWidth * 2);
-            const HGDIOBJ hOldbmp = SelectObject(hdcMem, hBitmap);
-            BitBlt(hdcMem, 0, 0, nWidth - outerWidth * 2, nHeight - outerWidth * 2, hdcSrc, nXWindow + outerWidth,
-                   nYWindow + outerWidth, SRCCOPY);
-            CImage image;
-            image.Attach(hBitmap);
-            // auto* date = new wchar_t[256];
-            wchar_t date[256];
-            // const auto time = new wchar_t[80];
-            wchar_t time[80];
-            SYSTEMTIME st;
-            // [[maybe_unused]] auto ret = setlocale(LC_ALL, "zh-CN");
-            GetLocalTime(&st);
-            GetDateFormatEx(L"zh-CN", DATE_LONGDATE, &st, nullptr, date, _countof(date), nullptr);
-            GetTimeFormatEx(L"zh-CN", TIME_FORCE24HOURFORMAT, &st, L"HH'-'mm'-'ss", time, _countof(time));
-            const auto tempPath = Windows::Storage::ApplicationData::Current().TemporaryFolder().Path() + L"\\" + date +
-                time + L".bmp";
-            WindowHelper::OpenMessageWindow(L"test " + to_hstring(image.GetWidth()) + L"\n" + tempPath);
-            [[maybe_unused]] auto r = image.Save(tempPath.c_str());
-            Windows::Media::Ocr::OcrEngine ocrEngine{nullptr};
-            if (WindowManager::sourceLanguageTag.empty() || !Windows::Globalization::Language::IsWellFormed(
-                WindowManager::sourceLanguageTag))
-            {
-                ocrEngine =
-                    Windows::Media::Ocr::OcrEngine::TryCreateFromUserProfileLanguages();
-            }
-            else
-            {
-                ocrEngine = Windows::Media::Ocr::OcrEngine::TryCreateFromLanguage(
-                    Windows::Globalization::Language(WindowManager::sourceLanguageTag));
-            }
-            const auto buffer = CaptureHelper::CreateBufferFromHBitmap(hdcSrc, hBitmap);
-            SelectObject(hdcMem, hOldbmp);
-            DeleteObject(hdcMem);
-            ReleaseDC(hWnd, hdcSrc);
-            const auto bitmap = Windows::Graphics::Imaging::SoftwareBitmap::CreateCopyFromBuffer(
-                buffer, Windows::Graphics::Imaging::BitmapPixelFormat::Bgra8, image.GetWidth(),
-                image.GetHeight(), Windows::Graphics::Imaging::BitmapAlphaMode::Premultiplied);
-            /*auto img = Controls::Image();
-            const auto softwareBitmapSource = Media::Imaging::SoftwareBitmapSource();
-            co_await softwareBitmapSource.SetBitmapAsync(bitmap);
-            img.Source(softwareBitmapSource);
-            sp1().Children().Append(img);*/
-            const auto ocrResult = co_await ocrEngine.RecognizeAsync(bitmap);
-            const auto lines = ocrResult.Lines();
-            hstring results;
-            hstring texts;
-            for (auto line : lines)
-            {
-                auto xStart = WindowManager::monitorWidth;
-                auto yStart = WindowManager::monitorHeight;
-                auto xEnd = 0.0;
-                auto yEnd = 0.0;
-                for (auto words = line.Words(); auto word : words)
+            WindowManager::isRightClick = true;
+            /*auto r = Media::CompositionTarget::Rendered(
+                auto_revoke, [this](IInspectable const& /* sender #1#, Media::RenderedEventArgs const& /* args #1#)
                 {
-                    auto text = word.Text();
-                    texts = texts + text;
-                    const auto rect = word.BoundingRect();
-                    results = results + text + L" " + to_hstring(rect.X) + L" " + to_hstring(rect.Y) + L" " +
-                        to_hstring(rect.Width) + L" " + to_hstring(rect.Height) + L"\n";
-                    xStart = min(xStart, rect.X);
-                    yStart = min(yStart, rect.Y);
-                    xEnd = max(xEnd, rect.X + rect.Width);
-                    yEnd = max(yEnd, rect.Y + rect.Height);
-                    // auto rectangle = Shapes::Rectangle();
-                    // rectangle.Width(rect.Width);
-                    // rectangle.Height(rect.Height);
-                    // rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
-                    // rectangle.StrokeThickness(0.7);
-                    // mainCanvas().SetLeft(rectangle, rect.X);
-                    // mainCanvas().SetTop(rectangle, rect.Y);
-                    // mainCanvas().Children().Append(rectangle);
-                    auto textBlock = Controls::TextBlock();
-                    textBlock.Text(text);
-                    textBlock.FontSize(rect.Height);
-                    textBlock.Width(rect.Width);
-                    textBlock.Height(rect.Height * 1.25);
-                    textBlock.ProtectedCursor(ArrowCursor);
-                    mainCanvas().SetLeft(textBlock, rect.X);
-                    mainCanvas().SetTop(textBlock, rect.Y);
-                    mainCanvas().Children().Append(textBlock);
-                }
-                auto rectangle = Shapes::Rectangle();
-                rectangle.Width(xEnd - xStart);
-                rectangle.Height((yEnd - yStart) * 1.25);
-                rectangle.Stroke(Media::SolidColorBrush(Windows::UI::Colors::Red()));
-                rectangle.StrokeThickness(0.7);
-                rectangle.ProtectedCursor(ArrowCursor);
-                mainCanvas().SetLeft(rectangle, xStart);
-                mainCanvas().SetTop(rectangle, yStart);
-                mainCanvas().Children().Append(rectangle);
-            }
-            WindowManager::rawText = texts;
-            WindowHelper::OpenMessageWindow(results);
+                    CaptureHelper::CaptureAndRecognizeAsync(window);
+                });*/
+            CleanCanvas();
+            /*const auto dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+            // const auto dispatcherQueue = Windows::System::DispatcherQueue::GetForCurrentThread();
+            for (int i = 0; i < 5; ++i)
+            {
+                // completion_source<bool> completionSource;
+                dispatcherQueue.TryEnqueue(Microsoft::UI::Dispatching::DispatcherQueuePriority::Low,
+                                           [this]
+                                           {
+                                               // completionSource.set(true);
+                                           });
+                // co_await completionSource;
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }*/
+            // e.Handled(false);
+            /*const auto dispatcherQueue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread();
+            dispatcherQueue.TryEnqueue(Microsoft::UI::Dispatching::DispatcherQueuePriority::Normal,
+                                       [this]
+                                       {
+                                           CleanCanvas();
+                                           mainCanvas().UpdateLayout();
+                                       });
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            dispatcherQueue.TryEnqueue(Microsoft::UI::Dispatching::DispatcherQueuePriority::Normal,
+                                       [this]
+                                       {
+                                           // WindowHelper::OpenMessageWindow(L"before capture");
+                                           CaptureHelper::CaptureAndRecognizeAsync(window);
+                                           // WindowHelper::OpenMessageWindow(L"after capture");
+                                       });*/
         }
     }
 
@@ -405,6 +344,10 @@ namespace winrt::OCR::implementation
         if (!borderPressed)
         {
             sender.try_as<UIElement>().ReleasePointerCaptures();
+            if (WindowManager::isRightClick)
+            {
+                CaptureHelper::CaptureAndRecognizeAsync(window);
+            }
         }
         // bMoving = false;
         cursorPosition = CursorPosition::Undefined;
@@ -416,7 +359,7 @@ namespace winrt::OCR::implementation
     }
 
     void OverlayPanel::border_PointerMoved(Windows::Foundation::IInspectable const& sender,
-                                           RoutedEventArgs const&)
+                                           Input::PointerRoutedEventArgs const& e)
     {
         const auto totalBorderThickness = mainBorderThickness * 3;
         const auto sd = sender.try_as<UIElement>();
@@ -494,6 +437,10 @@ namespace winrt::OCR::implementation
                 _apw.Resize({nWidth, nHeight + (p.y - nY)});
             }
         }
+        if (borderPressed)
+        {
+            e.Handled(true);
+        }
     }
 
     void OverlayPanel::panel_Loaded(Windows::Foundation::IInspectable const&,
@@ -513,6 +460,7 @@ namespace winrt::OCR::implementation
                                              Input::PointerRoutedEventArgs const& e)
     {
         borderPressed = true;
+        [[maybe_unused]] auto result = sender.try_as<UIElement>().CapturePointer(e.Pointer());
         // WindowHelper::OpenMessageWindow(L"border pressed");
         POINT pt;
         GetCursorPos(&pt);
@@ -522,7 +470,6 @@ namespace winrt::OCR::implementation
         nYWindow = _apw.Position().Y;
         nWidth = _apw.Size().Width;
         nHeight = _apw.Size().Height;
-        [[maybe_unused]] auto result = sender.try_as<UIElement>().CapturePointer(e.Pointer());
         UpdateSharedItem();
     }
 
@@ -537,6 +484,7 @@ namespace winrt::OCR::implementation
         UpdateSize();
     }
 
+
     int32_t OverlayPanel::MyProperty()
     {
         throw hresult_not_implemented();
@@ -545,6 +493,31 @@ namespace winrt::OCR::implementation
     void OverlayPanel::MyProperty(int32_t /* value */)
     {
         throw hresult_not_implemented();
+    }
+
+    int OverlayPanel::NWidth()
+    {
+        return nWidth;
+    }
+
+    int OverlayPanel::NHeight()
+    {
+        return nHeight;
+    }
+
+    int OverlayPanel::NXWindow()
+    {
+        return nXWindow;
+    }
+
+    int OverlayPanel::NYWindow()
+    {
+        return nYWindow;
+    }
+
+    Controls::Canvas OverlayPanel::MainCanvas()
+    {
+        return mainCanvas();
     }
 
     double OverlayPanel::MainBorderThickness()

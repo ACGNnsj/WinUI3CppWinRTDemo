@@ -73,5 +73,7 @@
 #include "TranslateHelper.h"
 #include "WindowManager.h"
 #include "SharedItem.h"
+#include "completion_source.h"
+// #include "winrt/OCR.h"
 #define  WM_SHOWCONFIG (WM_USER + 1)
 #define  WM_CLEAN (WM_USER + 2)

@@ -16,10 +16,12 @@ namespace winrt::OCR::implementation
         void Apply_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
         void Reset_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
         void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
-        void hotKeyTextBox_PreviewKeyDown(const IInspectable& sender, const Microsoft::UI::Xaml::Input::KeyRoutedEventArgs& e);
+        void hotKeyTextBox_PreviewKeyDown(const IInspectable& sender,
+                                          const Microsoft::UI::Xaml::Input::KeyRoutedEventArgs& e);
         void ApplyHotkey(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& e);
         void CleanWindow(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& e);
-     private:
+
+    private:
         OCR::SharedItem m_sharedItem{nullptr};
     };
 }

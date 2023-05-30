@@ -100,6 +100,7 @@ namespace winrt::OCR
 
     void TranslateHelper::CreateThread()
     {
+        WindowManager::threadCreated = true;
         auto t = std::jthread([]
         {
             while (true)
@@ -118,7 +119,17 @@ namespace winrt::OCR
                 }
                 else
                 {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    if (WindowManager::keepAlive)
+                    {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    }
+                    else
+                    {
+                        PyGILState_Ensure();
+                        Py_Finalize();
+                        // exit(0);
+                        TerminateProcess(GetCurrentProcess(), 0);
+                    }
                 }
             }
         });

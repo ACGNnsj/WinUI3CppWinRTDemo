@@ -5,6 +5,7 @@ namespace winrt::OCR
     {
     public:
         static concurrency::task<HRESULT> CaptureCurrentWindowAsync();
-        static Windows::Storage::Streams::IBuffer CreateBufferFromHBitmap(HDC hdc,HBITMAP hBitmap); 
+        static Windows::Foundation::IAsyncAction CaptureAndRecognizeAsync(Microsoft::UI::Xaml::Window window);
+        static Windows::Storage::Streams::IBuffer CreateBufferFromHBitmap(HDC hdc, HBITMAP hBitmap);
     };
 }
