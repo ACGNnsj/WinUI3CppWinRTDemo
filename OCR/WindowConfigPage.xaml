@@ -7,6 +7,7 @@
     xmlns:local="using:OCR"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d" x:Name="WindowConfigPageRef">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -27,8 +28,7 @@
         <NumberBox x:Name="xBox" Grid.Column="2" Header="x" SmallChange="10" LargeChange="100"
                    HorizontalAlignment="Center" />
         <NumberBox x:Name="yBox" Grid.Column="3" Header="y" SmallChange="10" LargeChange="100"
-                   Value="{Binding SharedItem.Y, Mode=TwoWay}"
-                   HorizontalAlignment="Center" />
+                   Value="{Binding SharedItem.Y, Mode=TwoWay}" HorizontalAlignment="Center" />
         <Button Grid.Row="1" Grid.ColumnSpan="2" Click="Apply_Click" HorizontalAlignment="Center">Apply</Button>
         <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Click="Reset_Click" HorizontalAlignment="Center">Reset</Button>
         <TextBox Grid.Row="2" Grid.ColumnSpan="2" Header="Hotkey for translation" x:Name="hotKeyTextBox"

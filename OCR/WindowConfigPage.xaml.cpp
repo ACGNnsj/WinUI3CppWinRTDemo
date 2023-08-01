@@ -31,11 +31,10 @@ namespace winrt::OCR::implementation
         xBinding.Mode(Data::BindingMode::TwoWay);
         // xBox().DataContext(OCR::WindowConfigPage());
         xBox().DataContext(*this);
-        // xBox().DataContext(operator IInspectable());
         // xBox().DataContext(this->operator IInspectable());
         xBinding.Path(PropertyPath(L"SharedItem.X"));
         xBox().SetBinding(Controls::NumberBox::ValueProperty(), xBinding);
-        yBox().DataContext(operator IInspectable());
+        // yBox().DataContext(operator IInspectable());
     }
 
     WindowConfigPage::WindowConfigPage(const Window& window)
