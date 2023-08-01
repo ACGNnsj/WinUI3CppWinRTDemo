@@ -4,6 +4,7 @@ import "SharedItem.idl";
 
 namespace OCR
 {
+    [Microsoft.UI.Xaml.Data.Bindable]//Only for Binding rather than x:Bind
     [default_interface]
     runtimeclass WindowConfigPage : Microsoft.UI.Xaml.Controls.Page
     {

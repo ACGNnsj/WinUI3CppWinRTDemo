@@ -24,6 +24,7 @@
     <ClCompile Include="CaptureHelper.cpp" />
     <ClCompile Include="TranslateHelper.cpp" />
     <ClCompile Include="WindowManager.cpp" />
+    <ClCompile Include="completion_source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="CaptureHelper.h" />
     <ClInclude Include="TranslateHelper.h" />
     <ClInclude Include="WindowManager.h" />
+    <ClInclude Include="completion_source.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">

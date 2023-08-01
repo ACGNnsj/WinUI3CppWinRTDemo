@@ -21,18 +21,22 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <NumberBox x:Name="widthBox" Header="width" SmallChange="10" LargeChange="100" Value="{x:Bind SharedItem.Width, Mode=OneWay}" HorizontalAlignment="Center" />
+        <NumberBox x:Name="widthBox" Header="width" SmallChange="10" LargeChange="100" HorizontalAlignment="Center" />
         <NumberBox x:Name="heightBox" Grid.Column="1" Header="height" SmallChange="10" LargeChange="100"
-                   Value="{x:Bind SharedItem.Height, Mode=OneWay}"  HorizontalAlignment="Center"/>
+                   Value="{x:Bind SharedItem.Height, Mode=OneWay}" HorizontalAlignment="Center" />
         <NumberBox x:Name="xBox" Grid.Column="2" Header="x" SmallChange="10" LargeChange="100"
-                   Value="{x:Bind SharedItem.X, Mode=OneWay}"  HorizontalAlignment="Center"/>
+                   HorizontalAlignment="Center" />
         <NumberBox x:Name="yBox" Grid.Column="3" Header="y" SmallChange="10" LargeChange="100"
-                   Value="{x:Bind SharedItem.Y, Mode=OneWay}"  HorizontalAlignment="Center"/>
-        <Button Grid.Row="1" Grid.ColumnSpan="2" Click="Apply_Click"  HorizontalAlignment="Center">Apply</Button>
-        <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Click="Reset_Click"  HorizontalAlignment="Center">Reset</Button>
-        <TextBox Grid.Row="2" Grid.ColumnSpan="2" Header="Hotkey for translation" x:Name="hotKeyTextBox" IsReadOnly="True" HorizontalAlignment="Center"
+                   Value="{x:Bind SharedItem.Y, Mode=OneWay}" HorizontalAlignment="Center" />
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Click="Apply_Click" HorizontalAlignment="Center">Apply</Button>
+        <Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Click="Reset_Click" HorizontalAlignment="Center">Reset</Button>
+        <TextBox Grid.Row="2" Grid.ColumnSpan="2" Header="Hotkey for translation" x:Name="hotKeyTextBox"
+                 IsReadOnly="True" HorizontalAlignment="Center"
                  PreviewKeyDown="hotKeyTextBox_PreviewKeyDown" />
-        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Click="ApplyHotkey" VerticalAlignment="Center" HorizontalAlignment="Center">Apply Hotkey</Button>
+        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Click="ApplyHotkey" VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            Apply Hotkey
+        </Button>
         <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Click="CleanWindow" HorizontalAlignment="Center">Clean the window</Button>
     </Grid>
 </Page>

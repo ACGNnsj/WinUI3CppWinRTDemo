@@ -1,5 +1,6 @@
 ﻿namespace OCR
 {
+    [Microsoft.UI.Xaml.Data.Bindable]//Only for Binding rather than x:Bind
     runtimeclass SharedItem : [default] Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
 		SharedItem();

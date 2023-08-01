@@ -19,6 +19,22 @@ namespace winrt::OCR::implementation
     {
         m_sharedItem = SharedItem::Instance();
         InitializeComponent();
+        const Data::Binding widthBinding;
+        widthBinding.Mode(Data::BindingMode::TwoWay);
+        // binding.Source(m_sharedItem);
+        //Although the implicit copy constructor breaks the singleton pattern, the two-way binding will change the value of all instances.
+        widthBinding.Source(SharedItem());
+        widthBinding.Path(PropertyPath(L"Width"));
+        // widthBox().SetBinding(Controls::NumberBox::ValueProperty(), binding);
+        Data::BindingOperations::SetBinding(widthBox(), Controls::NumberBox::ValueProperty(), widthBinding);
+        const auto xBinding = Data::Binding();
+        xBinding.Mode(Data::BindingMode::TwoWay);
+        // xBox().DataContext(OCR::WindowConfigPage());
+        xBox().DataContext(*this);
+        // xBox().DataContext(operator IInspectable());
+        // xBox().DataContext(this->operator IInspectable());
+        xBinding.Path(PropertyPath(L"SharedItem.X"));
+        xBox().SetBinding(Controls::NumberBox::ValueProperty(), xBinding);
     }
 
     WindowConfigPage::WindowConfigPage(const Window& window)
@@ -36,9 +52,11 @@ namespace winrt::OCR::implementation
     void WindowConfigPage::Apply_Click(const IInspectable&, const RoutedEventArgs&)
     {
         auto width = m_sharedItem.Width();
-        auto height = m_sharedItem.Height();
+        // auto height = m_sharedItem.Height();
+        auto height = SharedItem().Height();
         auto x = m_sharedItem.X();
-        auto y = m_sharedItem.Y();
+        // auto y = m_sharedItem.Y();
+        auto y = yBox().Value();
         const HWND hWnd = WindowManager::mainWindowHandle;
         const auto appWindow = WindowHelper::GetAppWindow(hWnd);
         if (_isnan(width))
