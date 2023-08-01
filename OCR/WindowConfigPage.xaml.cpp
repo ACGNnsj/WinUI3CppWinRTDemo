@@ -35,6 +35,7 @@ namespace winrt::OCR::implementation
         // xBox().DataContext(this->operator IInspectable());
         xBinding.Path(PropertyPath(L"SharedItem.X"));
         xBox().SetBinding(Controls::NumberBox::ValueProperty(), xBinding);
+        yBox().DataContext(operator IInspectable());
     }
 
     WindowConfigPage::WindowConfigPage(const Window& window)
@@ -53,10 +54,11 @@ namespace winrt::OCR::implementation
     {
         auto width = m_sharedItem.Width();
         // auto height = m_sharedItem.Height();
-        auto height = SharedItem().Height();
+        // auto height = SharedItem().Height();
+        auto height = heightBox().Value();
         auto x = m_sharedItem.X();
-        // auto y = m_sharedItem.Y();
-        auto y = yBox().Value();
+        auto y = m_sharedItem.Y();
+        // auto y = yBox().Value();
         const HWND hWnd = WindowManager::mainWindowHandle;
         const auto appWindow = WindowHelper::GetAppWindow(hWnd);
         if (_isnan(width))
