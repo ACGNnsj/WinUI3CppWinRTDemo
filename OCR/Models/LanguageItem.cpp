@@ -1,5 +1,4 @@
 ﻿#include "pch.h"
-#include "LanguageItem.h"
 #if __has_include("LanguageItem.g.cpp")
 #include "LanguageItem.g.cpp"
 #endif

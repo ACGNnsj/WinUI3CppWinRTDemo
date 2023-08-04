@@ -12,7 +12,8 @@ namespace winrt::OCR::implementation
         WindowConfigPage();
         WindowConfigPage(const Microsoft::UI::Xaml::Window& window);
         Microsoft::UI::Xaml::Window outerWindow{nullptr};
-        OCR::SharedItem SharedItem();
+        // OCR::SharedItem SharedItem();
+        winrt_property<OCR::SharedItem,false> SharedItem;
         void Apply_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
         void Reset_Click(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& args);
         void OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& e);
@@ -21,8 +22,8 @@ namespace winrt::OCR::implementation
         void ApplyHotkey(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& e);
         void CleanWindow(const IInspectable& sender, const Microsoft::UI::Xaml::RoutedEventArgs& e);
 
-    private:
-        OCR::SharedItem m_sharedItem{nullptr};
+    // private:
+    //     OCR::SharedItem& m_sharedItem;
     };
 }
 

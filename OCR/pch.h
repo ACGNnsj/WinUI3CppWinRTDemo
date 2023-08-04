@@ -40,7 +40,9 @@
 #include <shobjidl_core.h>
 #include <strsafe.h>
 
+#include <winrt/Windows.Foundation.Diagnostics.h>
 #include <winrt/Windows.Globalization.h>
+#include <winrt/Windows.Globalization.DateTimeFormatting.h>
 #include <winrt/Windows.Graphics.Capture.h>
 #include <winrt/Windows.Graphics.Imaging.h>
 #include <winrt/Windows.Media.Ocr.h>
@@ -67,13 +69,18 @@
 #include <afxwin.h>
 #include <atlimage.h>
 
-#include "WindowHelper.h"
-#include "StringHelper.h"
-#include "CaptureHelper.h"
-#include "TranslateHelper.h"
-#include "WindowManager.h"
-#include "SharedItem.h"
+#include <wil/result_macros.h>
+
+#include "Common\winrt_functor.h"
+#include "Common/WindowHelper.h"
+#include "Common/StringHelper.h"
+#include "Common/CaptureHelper.h"
+#include "Common/TranslateHelper.h"
+#include "Common/WindowManager.h"
+#include "Models/SharedItem.h"
+#include "Models/LanguageItem.h"
 #include "completion_source.h"
+#include "Common/LoggingManager.h"
 // #include "winrt/OCR.h"
 #define  WM_SHOWCONFIG (WM_USER + 1)
 #define  WM_CLEAN (WM_USER + 2)

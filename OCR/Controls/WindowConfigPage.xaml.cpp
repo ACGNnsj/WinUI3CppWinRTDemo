@@ -17,13 +17,14 @@ namespace winrt::OCR::implementation
 {
     WindowConfigPage::WindowConfigPage()
     {
-        m_sharedItem = SharedItem::Instance();
+        // m_sharedItem = SharedItem::Instance();
+        SharedItem.value = SharedItem::Instance();
         InitializeComponent();
         const Data::Binding widthBinding;
         widthBinding.Mode(Data::BindingMode::TwoWay);
         // binding.Source(m_sharedItem);
         //Although the implicit copy constructor breaks the singleton pattern, the two-way binding will change the value of all instances.
-        widthBinding.Source(SharedItem());
+        widthBinding.Source(SharedItem.value);
         widthBinding.Path(PropertyPath(L"Width"));
         // widthBox().SetBinding(Controls::NumberBox::ValueProperty(), binding);
         Data::BindingOperations::SetBinding(widthBox(), Controls::NumberBox::ValueProperty(), widthBinding);
@@ -39,24 +40,28 @@ namespace winrt::OCR::implementation
 
     WindowConfigPage::WindowConfigPage(const Window& window)
     {
-        m_sharedItem = SharedItem::Instance();
+        // m_sharedItem = SharedItem::Instance();
+        SharedItem.value = SharedItem::Instance();
         this->outerWindow = window;
         InitializeComponent();
     }
 
-    OCR::SharedItem WindowConfigPage::SharedItem()
-    {
-        return m_sharedItem;
-    }
+    // OCR::SharedItem WindowConfigPage::SharedItem()
+    // {
+    //     return m_sharedItem;
+    // }
 
     void WindowConfigPage::Apply_Click(const IInspectable&, const RoutedEventArgs&)
     {
-        auto width = m_sharedItem.Width();
+        // auto width = m_sharedItem.Width();
+        auto width = SharedItem.value.Width();
         // auto height = m_sharedItem.Height();
         // auto height = SharedItem().Height();
         auto height = heightBox().Value();
-        auto x = m_sharedItem.X();
-        auto y = m_sharedItem.Y();
+        // auto x = m_sharedItem.X();
+        auto x=SharedItem.value.X();
+        // auto y = m_sharedItem.Y();
+        auto y = SharedItem.value.Y();
         // auto y = yBox().Value();
         const HWND hWnd = WindowManager::mainWindowHandle;
         const auto appWindow = WindowHelper::GetAppWindow(hWnd);
@@ -80,9 +85,18 @@ namespace winrt::OCR::implementation
             y = appWindow.Position().Y;
             WindowHelper::OpenMessageWindow(L"y is NaN");
         }
-        appWindow.MoveAndResize({
-            static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height)
-        });
+        try
+        {
+            appWindow.MoveAndResize({
+                static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height)
+            });
+        }
+        catch (...)
+        {
+            LOG_CAUGHT_EXCEPTION();
+            // wil::details::in1diag3::Log_CaughtException(_ReturnAddress(), static_cast<unsigned short>(91),
+                                                        // "WindowConfigPage.xaml.cpp");
+        }
     }
 
     void WindowConfigPage::Reset_Click(const IInspectable&, const RoutedEventArgs&)
@@ -90,10 +104,14 @@ namespace winrt::OCR::implementation
         const HWND hWnd = WindowManager::mainWindowHandle;
         const auto appWindow = WindowHelper::GetAppWindow(hWnd);
         appWindow.MoveAndResize(WindowManager::defaultWindowRect);
-        m_sharedItem.X(WindowManager::defaultWindowRect.X);
-        m_sharedItem.Y(WindowManager::defaultWindowRect.Y);
-        m_sharedItem.Width(WindowManager::defaultWindowRect.Width);
-        m_sharedItem.Height(WindowManager::defaultWindowRect.Height);
+        // m_sharedItem.X(WindowManager::defaultWindowRect.X);
+        SharedItem.value.X(WindowManager::defaultWindowRect.X);
+        // m_sharedItem.Y(WindowManager::defaultWindowRect.Y);
+        SharedItem.value.Y(WindowManager::defaultWindowRect.Y);
+        // m_sharedItem.Width(WindowManager::defaultWindowRect.Width);
+        SharedItem.value.Width(WindowManager::defaultWindowRect.Width);
+        // m_sharedItem.Height(WindowManager::defaultWindowRect.Height);
+        SharedItem.value.Height(WindowManager::defaultWindowRect.Height);
     }
 
     void WindowConfigPage::OnNavigatedTo(Navigation::NavigationEventArgs const& e)

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "OverlayPanel.xaml.h"
+#include "Controls/OverlayPanel.xaml.h"
 
 namespace winrt::OCR
 {

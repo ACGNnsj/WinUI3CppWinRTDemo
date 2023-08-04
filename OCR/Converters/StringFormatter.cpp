@@ -14,6 +14,7 @@ namespace winrt::OCR::implementation
             fmtString)
         {
             const auto result = std::vformat(fmtString->c_str(), std::make_wformat_args(rawString->c_str()));
+            // const auto result = std::vformat(fmtString->operator std::wstring_view(), std::make_wformat_args(rawString->c_str()));
             return box_value(result);
         }
         return box_value(L"");

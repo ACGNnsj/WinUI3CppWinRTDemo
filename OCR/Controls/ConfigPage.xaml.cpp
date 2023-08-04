@@ -4,8 +4,6 @@
 #include "pch.h"
 #include "ConfigPage.xaml.h"
 
-#include "LanguageItem.h"
-
 #if __has_include("ConfigPage.g.cpp")
 #include "ConfigPage.g.cpp"
 #endif
@@ -20,7 +18,8 @@ namespace winrt::OCR::implementation
 {
     ConfigPage::ConfigPage()
     {
-        m_sharedItem = SharedItem::Instance();
+        // m_sharedItem = SharedItem::Instance();
+        SharedItem.value = SharedItem::Instance();
         InitializeComponent();
         InitializeLanguageSettings();
     }
@@ -28,21 +27,22 @@ namespace winrt::OCR::implementation
     ConfigPage::ConfigPage(const Window& window)
     {
         this->outerWindow = window;
-        m_sharedItem = SharedItem::Instance();
+        // m_sharedItem = SharedItem::Instance();
+        SharedItem.value = SharedItem::Instance();
         InitializeComponent();
         InitializeLanguageSettings();
         // this->DataContext(m_sharedItem);
     }
 
-    OCR::SharedItem ConfigPage::SharedItem()
-    {
-        return m_sharedItem;
-    }
+    // OCR::SharedItem ConfigPage::SharedItem()
+    // {
+    //     return m_sharedItem;
+    // }
 
-    Windows::Foundation::Collections::IObservableVector<OCR::LanguageItem> ConfigPage::LanguageItems()
-    {
-        return m_languageItems;
-    }
+    // Windows::Foundation::Collections::IObservableVector<OCR::LanguageItem> ConfigPage::LanguageItems()
+    // {
+    //     return m_languageItems;
+    // }
 
     Windows::Foundation::IAsyncAction ConfigPage::pyHomeButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
@@ -52,7 +52,8 @@ namespace winrt::OCR::implementation
         const auto folder = co_await picker.PickSingleFolderAsync();
         const auto path = folder.Path();
         // WindowHelper::OpenMessageWindow(L"path: " + path);
-        m_sharedItem.PyHome(path);
+        // m_sharedItem.PyHome(path);
+        SharedItem.value.PyHome(path);
     }
 
     Windows::Foundation::IAsyncAction ConfigPage::sitePackagesButton_Click(
@@ -62,14 +63,14 @@ namespace winrt::OCR::implementation
         const HWND hWnd = WindowHelper::GetWindowHandle(outerWindow);
         picker.as<IInitializeWithWindow>()->Initialize(hWnd);
         const auto folder = co_await picker.PickSingleFolderAsync();
-        m_sharedItem.SitePackages(folder.Path());
+        SharedItem.value.SitePackages(folder.Path());
     }
 
     void ConfigPage::saveButton_Click(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
     {
         const auto localSettings = Windows::Storage::ApplicationData::Current().LocalSettings();
-        localSettings.Values().Insert(L"pyHome", box_value(m_sharedItem.PyHome()));
-        localSettings.Values().Insert(L"sitePackages", box_value(m_sharedItem.SitePackages()));
+        localSettings.Values().Insert(L"pyHome", box_value(SharedItem.value.PyHome()));
+        localSettings.Values().Insert(L"sitePackages", box_value(SharedItem.value.SitePackages()));
     }
 
     void ConfigPage::applyButton_Click(Windows::Foundation::IInspectable const&, RoutedEventArgs const&)
@@ -93,7 +94,8 @@ namespace winrt::OCR::implementation
         const auto supportedLanguages = Windows::Media::Ocr::OcrEngine::AvailableRecognizerLanguages();
         // hstring text = L"";
         LanguageItem::RegisterDependencyProperty();
-        m_languageItems = single_threaded_observable_vector<OCR::LanguageItem>();
+        // m_languageItems = single_threaded_observable_vector<OCR::LanguageItem>();
+        LanguageItems.value = single_threaded_observable_vector<OCR::LanguageItem>();
         for (auto supported_language : supportedLanguages)
         {
             auto languageTag = supported_language.LanguageTag();
@@ -102,7 +104,7 @@ namespace winrt::OCR::implementation
             OCR::LanguageItem item = make<OCR::implementation::LanguageItem>();
             item.DisplayName(displayName);
             item.LanguageTag(languageTag);
-            m_languageItems.Append(item);
+            LanguageItems.value.Append(item);
             // sourceComboBox().Items().Append(item);
             // targetComboBox().Items().Append(item);
             // sourceComboBox().Items().Append(box_value(languageTag));

@@ -1,12 +1,11 @@
 ﻿#include "pch.h"
-#include "SharedItem.h"
 #if __has_include("SharedItem.g.cpp")
 #include "SharedItem.g.cpp"
 #endif
 
 namespace winrt::OCR::implementation
 {
-    OCR::SharedItem SharedItem::Instance()
+    OCR::SharedItem& SharedItem::Instance()
     {
         static auto instance = OCR::SharedItem();
         return instance;
@@ -22,7 +21,8 @@ namespace winrt::OCR::implementation
         if (m_pyHome != value)
         {
             m_pyHome = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"PyHome"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"PyHome"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"PyHome"});
         }
     }
 
@@ -41,7 +41,8 @@ namespace winrt::OCR::implementation
         if (m_width != value)
         {
             m_width = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Width"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Width"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Width"});
         }
     }
 
@@ -55,7 +56,8 @@ namespace winrt::OCR::implementation
         if (m_height != value)
         {
             m_height = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Height"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Height"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Height"});
         }
     }
 
@@ -69,7 +71,8 @@ namespace winrt::OCR::implementation
         if (m_x != value)
         {
             m_x = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"X"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"X"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"X"});
         }
     }
 
@@ -83,7 +86,8 @@ namespace winrt::OCR::implementation
         if (m_y != value)
         {
             m_y = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Y"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Y"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"Y"});
         }
     }
 
@@ -92,7 +96,8 @@ namespace winrt::OCR::implementation
         if (m_sitePackages != value)
         {
             m_sitePackages = value;
-            m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"SitePackages"});
+            // m_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"SitePackages"});
+            PropertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs{L"SitePackages"});
         }
     }
 
@@ -105,13 +110,13 @@ namespace winrt::OCR::implementation
         SitePackages(sitePackages);
     }
 
-    event_token SharedItem::PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
-    {
-        return m_propertyChanged.add(handler);
-    }
-
-    void SharedItem::PropertyChanged(event_token const& token)
-    {
-        m_propertyChanged.remove(token);
-    }
+    // event_token SharedItem::PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler)
+    // {
+    //     return m_propertyChanged.add(handler);
+    // }
+    //
+    // void SharedItem::PropertyChanged(event_token const& token)
+    // {
+    //     m_propertyChanged.remove(token);
+    // }
 }

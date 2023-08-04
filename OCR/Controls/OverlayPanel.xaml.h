@@ -4,6 +4,7 @@
 #pragma once
 
 #include "OverlayPanel.g.h"
+#include "Models/SharedItem.h"
 
 
 namespace winrt::OCR::implementation
@@ -24,12 +25,16 @@ namespace winrt::OCR::implementation
         Microsoft::UI::Windowing::OverlappedPresenter _presenter = nullptr;
         ULONG_PTR m_initToken;
         HBITMAP m_hBitmap;
-        double mainBorderThickness = 3;
-        double mainBorderMargin = 5;
+        // double mainBorderThickness = 3;
+        // double mainBorderMargin = 5;
+        winrt_property<double> MainBorderThickness{3};
+        winrt_property<double> MainBorderMargin = winrt_property<double>(5);
         CursorPosition cursorPosition = CursorPosition::Undefined;
         bool bMoving = false;
         bool borderPressed = false;
-        int nX = 0, nY = 0, nXWindow = 0, nYWindow = 0, nWidth = 0, nHeight = 0;
+        // int nX = 0, nY = 0, nXWindow = 0, nYWindow = 0, nWidth = 0, nHeight = 0;
+        int nX = 0, nY = 0;
+        winrt_property<int, false> NXWindow, NYWindow, NWidth, NHeight;
         void AfterInitialization(const Microsoft::UI::Xaml::Window& outerWindow);
         HRESULT CreateD2D1Factory();
         HRESULT CreateDeviceContext();
@@ -50,22 +55,22 @@ namespace winrt::OCR::implementation
                                    Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
         void border_PointerReleased(Windows::Foundation::IInspectable const& sender,
                                     Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
-        
+
         int32_t MyProperty();
         void MyProperty(int value);
-        int NWidth();
-        int NHeight();
-        int NXWindow();
-        int NYWindow();
+        // int NWidth();
+        // int NHeight();
+        // int NXWindow();
+        // int NYWindow();
         Microsoft::UI::Xaml::Controls::Canvas MainCanvas();
-        double MainBorderThickness();
-        void MainBorderThickness(double value);
-        double MainBorderMargin();
-        void MainBorderMargin(double value);
+        // double MainBorderThickness();
+        // void MainBorderThickness(double value);
+        // double MainBorderMargin();
+        // void MainBorderMargin(double value);
         void CleanCanvas();
 
     private:
-        OCR::SharedItem m_sharedItem{nullptr};
+        OCR::SharedItem m_sharedItem;
         void UpdateSharedItem();
         void UpdateSize();
         void UpdatePosition();

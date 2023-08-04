@@ -4,6 +4,7 @@
 #include "pch.h"
 
 #include "App.xaml.h"
+
 // #include "MainWindow.xaml.h"
 // #include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 
@@ -87,6 +88,31 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     // WindowHelper::OpenMessageWindow(
     //     winrt::xaml_typename<OCR::ConfigPage>().Name + L" " + to_hstring(
     //         static_cast<int32_t>(winrt::xaml_typename<OCR::ConfigPage>().Kind)));
+    wil::SetResultLoggingCallback([](wil::FailureInfo const& failure) noexcept
+    {
+        constexpr std::size_t sizeOfLogMessageWithNul = 2048;
+
+        wchar_t logMessage[sizeOfLogMessageWithNul];
+        if (SUCCEEDED(wil::GetFailureLogString(logMessage, sizeOfLogMessageWithNul, failure)))
+        {
+            std::fputws(logMessage, stderr);
+        }
+    });
+    LoggingManager::Initiate();
+    auto& item = SharedItem::Instance();
+    auto addr = &item;
+    decltype(auto) another_item = SharedItem::Instance();
+    auto another_addr = &another_item;
+    if (addr == another_addr)
+    {
+        WindowHelper::OpenMessageWindow(to_hstring(reinterpret_cast<std::uintptr_t>(addr)), L"Same instance");
+    }
+    else
+    {
+        WindowHelper::OpenMessageWindow(
+            to_hstring(reinterpret_cast<std::uintptr_t>(addr)) + L" " + to_hstring(
+                reinterpret_cast<std::uintptr_t>(another_addr)), L"Different instance");
+    }
 }
 
 Window App::Window()

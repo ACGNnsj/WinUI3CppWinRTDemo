@@ -6,7 +6,7 @@ namespace winrt::OCR::implementation
     struct SharedItem : SharedItemT<SharedItem>
     {
         SharedItem();
-        static OCR::SharedItem Instance();
+        static OCR::SharedItem& Instance();
         hstring PyHome();
         void PyHome(hstring const& value);
         hstring SitePackages();
@@ -19,9 +19,10 @@ namespace winrt::OCR::implementation
         double Y();
         void Y(double value);
         void SitePackages(hstring const& value);
-        event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
-        void PropertyChanged(event_token const& token);
-
+        // event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
+        // void PropertyChanged(event_token const& token);
+        winrt_event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> PropertyChanged;
+        
     private:
         hstring m_pyHome;
         hstring m_sitePackages;
@@ -29,7 +30,7 @@ namespace winrt::OCR::implementation
         double m_height;
         double m_x;
         double m_y;
-        event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+        // event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
     };
 }
 

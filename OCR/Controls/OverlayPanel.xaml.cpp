@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-#include "OverlayPanel.xaml.h"
+#include "Controls\OverlayPanel.xaml.h"
 #if __has_include("OverlayPanel.g.cpp")
 #include "OverlayPanel.g.cpp"
 #endif
@@ -17,6 +17,7 @@ namespace winrt::OCR::implementation
 
     OverlayPanel::OverlayPanel()
     {
+        // m_sharedItem = SharedItem::Instance();
         InitializeComponent();
     }
 
@@ -99,11 +100,12 @@ namespace winrt::OCR::implementation
         // nYWindow = 100;
         // nWidth = 800;
         // nHeight = 600;
-        nXWindow = WindowManager::defaultWindowRect.X;
-        nYWindow = WindowManager::defaultWindowRect.Y;
-        nWidth = WindowManager::defaultWindowRect.Width;
-        nHeight = WindowManager::defaultWindowRect.Height;
-        WindowHelper::SetActualWindowPos(hWndMain, HWND_TOPMOST, nXWindow, nYWindow, nWidth, nHeight, 0);
+        NXWindow = WindowManager::defaultWindowRect.X;
+        NYWindow.value = WindowManager::defaultWindowRect.Y;
+        NWidth.value = WindowManager::defaultWindowRect.Width;
+        NHeight.value = WindowManager::defaultWindowRect.Height;
+        WindowHelper::SetActualWindowPos(hWndMain, HWND_TOPMOST, NXWindow.value, NYWindow.value, NWidth(),
+                                         NHeight.value, 0);
         UpdateSharedItem();
         // WindowHelper::OpenMessageWindow(
         //     to_hstring(_apw.Position().X) + L" " + to_hstring(_apw.Position().Y) + L" " + to_hstring(_apw.Size().Width)
@@ -198,7 +200,7 @@ namespace winrt::OCR::implementation
             GetCursorPos(&pt);
             if (cursorPosition == CursorPosition::Center)
             {
-                _apw.Move(Windows::Graphics::PointInt32{nXWindow + (pt.x - nX), nYWindow + (pt.y - nY)});
+                _apw.Move(Windows::Graphics::PointInt32{NXWindow.value + (pt.x - nX), NYWindow() + (pt.y - nY)});
                 e.Handled(true);
             }
         }
@@ -251,10 +253,10 @@ namespace winrt::OCR::implementation
             GetCursorPos(&pt);
             nX = pt.x;
             nY = pt.y;
-            nXWindow = _apw.Position().X;
-            nYWindow = _apw.Position().Y;
-            nWidth = _apw.Size().Width;
-            nHeight = _apw.Size().Height;
+            NXWindow.value = _apw.Position().X;
+            NYWindow = _apw.Position().Y;
+            NWidth.value = _apw.Size().Width;
+            NHeight.value = _apw.Size().Height;
             cursorPosition = CursorPosition::Center;
             UpdateSharedItem();
         }
@@ -353,88 +355,89 @@ namespace winrt::OCR::implementation
         cursorPosition = CursorPosition::Undefined;
         borderPressed = false;
         // WindowHelper::OpenMessageWindow(L"border released");
-        nXWindow = _apw.Position().X;
-        nYWindow = _apw.Position().Y;
+        NXWindow.value = _apw.Position().X;
+        NYWindow.value = _apw.Position().Y;
         UpdatePosition();
     }
 
     void OverlayPanel::border_PointerMoved(Windows::Foundation::IInspectable const& sender,
                                            Input::PointerRoutedEventArgs const& e)
     {
-        const auto totalBorderThickness = mainBorderThickness * 3;
+        const auto totalBorderThickness = MainBorderThickness.value * 3;
         const auto sd = sender.try_as<UIElement>();
         POINT p;
         GetCursorPos(&p);
-        if (const auto x = p.x, y = p.y; x <= nXWindow + totalBorderThickness && y <= nYWindow + totalBorderThickness)
-        {
-            sd.ProtectedCursor(SizeNorthwestSoutheastCursor);
-            if (borderPressed)
-            {
-                _apw.MoveAndResize({
-                    nXWindow + (p.x - nX), nYWindow + (p.y - nY), nWidth - (p.x - nX), nHeight -
-                    (p.y - nY)
-                });
-            }
-        }
-        else if (x >= nXWindow + nWidth - totalBorderThickness && y >= nYWindow + nHeight -
+        if (const auto x = p.x, y = p.y; x <= NXWindow.value + totalBorderThickness && y <= NYWindow.value +
             totalBorderThickness)
         {
             sd.ProtectedCursor(SizeNorthwestSoutheastCursor);
             if (borderPressed)
             {
-                _apw.Resize({nWidth + (p.x - nX), nHeight + (p.y - nY)});
+                _apw.MoveAndResize({
+                    NXWindow.value + (p.x - nX), NYWindow.value + (p.y - nY), NWidth.value - (p.x - nX), NHeight.value -
+                    (p.y - nY)
+                });
             }
         }
-        else if (x >= nXWindow + nWidth - totalBorderThickness && y <= nYWindow + totalBorderThickness)
+        else if (x >= NXWindow.value + NWidth() - totalBorderThickness && y >= NYWindow.value + NHeight.value -
+            totalBorderThickness)
+        {
+            sd.ProtectedCursor(SizeNorthwestSoutheastCursor);
+            if (borderPressed)
+            {
+                _apw.Resize({NWidth() + (p.x - nX), NHeight() + (p.y - nY)});
+            }
+        }
+        else if (x >= NXWindow() + NWidth() - totalBorderThickness && y <= NYWindow() + totalBorderThickness)
         {
             sd.ProtectedCursor(SizeNortheastSouthwestCursor);
             if (borderPressed)
             {
                 _apw.MoveAndResize({
-                    nXWindow, nYWindow + (p.y - nY), nWidth + (p.x - nX), nHeight - (p.y - nY)
+                    NXWindow(), NYWindow() + (p.y - nY), NWidth() + (p.x - nX), NHeight() - (p.y - nY)
                 });
             }
         }
-        else if (x <= nXWindow + totalBorderThickness && y >= nYWindow + nHeight - totalBorderThickness)
+        else if (x <= NXWindow() + totalBorderThickness && y >= NYWindow() + NHeight() - totalBorderThickness)
         {
             sd.ProtectedCursor(SizeNortheastSouthwestCursor);
             if (borderPressed)
             {
                 _apw.MoveAndResize({
-                    nXWindow + (p.x - nX), nYWindow, nWidth - (p.x - nX), nHeight + (p.y - nY)
+                    NXWindow() + (p.x - nX), NYWindow(), NWidth() - (p.x - nX), NHeight() + (p.y - nY)
                 });
             }
         }
-        else if (x <= nXWindow + totalBorderThickness)
+        else if (x <= NXWindow() + totalBorderThickness)
         {
             sd.ProtectedCursor(SizeWestEastCursor);
             if (borderPressed)
             {
-                _apw.MoveAndResize({nXWindow + (p.x - nX), nYWindow, nWidth - (p.x - nX), nHeight});
+                _apw.MoveAndResize({NXWindow() + (p.x - nX), NYWindow(), NWidth() - (p.x - nX), NHeight()});
             }
         }
-        else if (x >= nXWindow + nWidth - totalBorderThickness)
+        else if (x >= NXWindow() + NWidth() - totalBorderThickness)
         {
             sd.ProtectedCursor(SizeWestEastCursor);
             if (borderPressed)
             {
-                _apw.Resize({nWidth + (p.x - nX), nHeight});
+                _apw.Resize({NWidth() + (p.x - nX), NHeight()});
             }
         }
-        else if (y <= nYWindow + totalBorderThickness)
+        else if (y <= NYWindow() + totalBorderThickness)
         {
             sd.ProtectedCursor(SizeNorthSouthCursor);
             if (borderPressed)
             {
-                _apw.MoveAndResize({nXWindow, nYWindow + (p.y - nY), nWidth, nHeight - (p.y - nY)});
+                _apw.MoveAndResize({NXWindow(), NYWindow() + (p.y - nY), NWidth(), NHeight() - (p.y - nY)});
             }
         }
-        else if (y >= nYWindow + nHeight - totalBorderThickness)
+        else if (y >= NYWindow() + NHeight() - totalBorderThickness)
         {
             sd.ProtectedCursor(SizeNorthSouthCursor);
             if (borderPressed)
             {
-                _apw.Resize({nWidth, nHeight + (p.y - nY)});
+                _apw.Resize({NWidth(), NHeight() + (p.y - nY)});
             }
         }
         if (borderPressed)
@@ -466,10 +469,10 @@ namespace winrt::OCR::implementation
         GetCursorPos(&pt);
         nX = pt.x;
         nY = pt.y;
-        nXWindow = _apw.Position().X;
-        nYWindow = _apw.Position().Y;
-        nWidth = _apw.Size().Width;
-        nHeight = _apw.Size().Height;
+        NXWindow.value = _apw.Position().X;
+        NYWindow.value = _apw.Position().Y;
+        NWidth.value = _apw.Size().Width;
+        NHeight.value = _apw.Size().Height;
         UpdateSharedItem();
     }
 
@@ -479,8 +482,8 @@ namespace winrt::OCR::implementation
         sender.try_as<UIElement>().ReleasePointerCaptures();
         // borderPressed = false;
         // cursorPosition = CursorPosition::Undefined;
-        nWidth = _apw.Size().Width;
-        nHeight = _apw.Size().Height;
+        NWidth.value = _apw.Size().Width;
+        NHeight.value = _apw.Size().Height;
         UpdateSize();
     }
 
@@ -495,50 +498,50 @@ namespace winrt::OCR::implementation
         throw hresult_not_implemented();
     }
 
-    int OverlayPanel::NWidth()
-    {
-        return nWidth;
-    }
-
-    int OverlayPanel::NHeight()
-    {
-        return nHeight;
-    }
-
-    int OverlayPanel::NXWindow()
-    {
-        return nXWindow;
-    }
-
-    int OverlayPanel::NYWindow()
-    {
-        return nYWindow;
-    }
+    // int OverlayPanel::NWidth()
+    // {
+    //     return nWidth;
+    // }
+    //
+    // int OverlayPanel::NHeight()
+    // {
+    //     return nHeight;
+    // }
+    //
+    // int OverlayPanel::NXWindow()
+    // {
+    //     return nXWindow;
+    // }
+    //
+    // int OverlayPanel::NYWindow()
+    // {
+    //     return nYWindow;
+    // }
 
     Controls::Canvas OverlayPanel::MainCanvas()
     {
         return mainCanvas();
     }
 
-    double OverlayPanel::MainBorderThickness()
-    {
-        return mainBorderThickness;
-    }
-
-    void OverlayPanel::MainBorderThickness(double value)
-    {
-        mainBorderThickness = value;
-    }
-
-    double OverlayPanel::MainBorderMargin()
-    {
-        return mainBorderMargin;
-    }
-
-    void OverlayPanel::MainBorderMargin(double value)
-    {
-        mainBorderMargin = value;
-    }
+    // double OverlayPanel::MainBorderThickness()
+    // {
+    //     return mainBorderThickness;
+    // }
+    //
+    // void OverlayPanel::MainBorderThickness(double value)
+    // {
+    //     mainBorderThickness = value;
+    // }
+    //
+    // double OverlayPanel::MainBorderMargin()
+    // {
+    //     return mainBorderMargin;
+    // }
+    //
+    // void OverlayPanel::MainBorderMargin(double value)
+    // {
+    //     mainBorderMargin = value;
+    // }
 
     void OverlayPanel::CleanCanvas()
     {
@@ -553,13 +556,13 @@ namespace winrt::OCR::implementation
 
     void OverlayPanel::UpdateSize()
     {
-        m_sharedItem.Width(nWidth);
-        m_sharedItem.Height(nHeight);
+        m_sharedItem.Width(NWidth());
+        m_sharedItem.Height(NHeight());
     }
 
     void OverlayPanel::UpdatePosition()
     {
-        m_sharedItem.X(nXWindow);
-        m_sharedItem.Y(nYWindow);
+        m_sharedItem.X(NXWindow());
+        m_sharedItem.Y(NYWindow());
     }
 }
